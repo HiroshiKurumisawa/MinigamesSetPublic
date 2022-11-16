@@ -34,7 +34,6 @@ public class TitleManager : MonoBehaviour
             StartCoroutine(GuestLoginProcess());
         }
     }
-
     IEnumerator GuestLoginProcess()
     {
         // POST送信用のフォームを作成
@@ -51,17 +50,16 @@ public class TitleManager : MonoBehaviour
         }
         else
         {
-            print(request.downloadHandler.text);        // JSON確認用出力
-
             var resData = JsonUtility.FromJson<Root>(request.downloadHandler.text);
             loginManagerCS.SetUserData(resData.guest_data.manage_id, resData.guest_data.login_id, resData.guest_data.user_name,
                 resData.guest_data.last_login, resData.guest_data.created, resData.guest_data.modified, resData.guest_data.connection_status);
-            
+
+            print(resData.guest_data.user_name);
+
             SceneManager.LoadScene("Lobby");        // シーン遷移
         }
     }
 }
-
 
 // ゲストログインの結果JSONを変換するためのクラス
 [Serializable]
