@@ -11,6 +11,16 @@ public class TitleManager : MonoBehaviour
     #region 変数群
     LoginManager loginManagerCS;
 
+    // アカウントログイン
+    bool isAccountLogin = false;                                        // アカウントログインフラグ
+    const string accountLoginURL = "http://localhost/user/account/login";
+    string loginUser_name = "";
+    string loginUser_password = "";
+    [Header("ユーザーログイン関係")]
+    [SerializeField] GameObject massage_LoginText;                      // メッセージテキスト(ログイン)
+    [SerializeField] TMP_InputField user_nameField_Login;                     // ユーザーネーム入力フィールド(ログイン)
+    [SerializeField] TMP_InputField passwordField_Login;                      // パスワード入力フィールド(ログイン)
+
     // ゲストログイン
     bool isGuestLogin = false;                                          // ゲストログインフラグ
     const string guestLoginURL = "http://localhost/user/guest/login";   // ゲストログインURL
@@ -33,6 +43,7 @@ public class TitleManager : MonoBehaviour
 
     private void Awake()
     {
+        massage_LoginText.GetComponent<TextMeshProUGUI>().text = "";
         massageText.GetComponent<TextMeshProUGUI>().text = "";
         createFormUI.SetActive(false);
     }
@@ -47,6 +58,74 @@ public class TitleManager : MonoBehaviour
 
     }
 
+    #region アカウントログイン関係
+    public void InputUserNameLogin()
+    {
+        loginUser_name = user_nameField_Login.text;
+    }
+    // パスワードinput
+    public void InputPasswordLogin()
+    {
+        loginUser_password = passwordField_Login.text;
+    }
+    // ログインボタンが押されたとき(AccountLogin用UIのEventTriggerのPointerClickに使う)
+    public void AccountLogin()
+    {
+        if (!isAccountLogin)
+        {
+            isAccountLogin = true;
+            {
+                StartCoroutine(AccountLoginProcess());
+            }
+        }
+    }
+    IEnumerator AccountLoginProcess()
+    {
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+        postData.AddField("user_name", loginUser_name);
+        postData.AddField("password", loginUser_password);
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(accountLoginURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+        else
+        {
+            AccountLoginRoot resData = JsonUtility.FromJson<AccountLoginRoot>(request.downloadHandler.text);
+
+            if (resData.result == 0)
+            {
+                if (resData.requestMessage == 1)           // エラーメッセージだった時(入力内容エラー)
+                {
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(入力内容に誤りがあります)";
+                    isAccountLogin = false;
+                }
+                else if (resData.requestMessage == 2)   // すでにログインされている状態
+                {
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(既にログインしています)";
+                    isAccountLogin = false;
+                }
+                else                                    // ログインできるとき
+                {
+                    loginManagerCS.SetUserData(resData.account_data.manage_id, resData.account_data.login_id, resData.account_data.user_name,
+                             resData.account_data.last_login, resData.account_data.created, resData.account_data.modified, resData.account_data.connection_status);
+
+                    print(resData.account_data.user_name);
+
+                    SceneManager.LoadScene("Lobby");        // シーン遷移
+                }
+            }
+
+        }
+    }
+    #endregion
     #region ゲストログイン関係
     // ゲストログインボタンが押されたとき(GuestLogin用UIのEventTriggerのPointerClickに使う)
     public void GuestLogin()
@@ -155,7 +234,7 @@ public class TitleManager : MonoBehaviour
                 massageText.GetComponent<TextMeshProUGUI>().color = new Color(0, 0, 255);
                 massageText.GetComponent<TextMeshProUGUI>().text = "作成成功";
             }
-            else if(resData.requestMessage == 1)
+            else if (resData.requestMessage == 1)
             {
                 massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
                 massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗(入力内容が不適切です)";
@@ -164,6 +243,28 @@ public class TitleManager : MonoBehaviour
         isCreateAccont = false;
     }
     #endregion
+}
+
+// アカウントログインの結果のJSONを変換するためのクラス
+[Serializable]
+public class AccountData
+{
+    public int manage_id;
+    public string login_id;
+    public string user_name;
+    public string pass_hash;
+    public string last_login;
+    public string created;
+    public string modified;
+    public bool connection_status;
+}
+
+[Serializable]
+public class AccountLoginRoot
+{
+    public int result;
+    public int requestMessage;
+    public AccountData account_data;
 }
 
 // ゲストログインの結果JSONを変換するためのクラス
