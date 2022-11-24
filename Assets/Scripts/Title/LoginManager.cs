@@ -27,7 +27,9 @@ public class LoginManager : MonoBehaviour
     bool connection_status;
     public bool Connection_status { get { return connection_status; } }
     //------------------------
-
+    // 接続しているアカウントの種類
+    int user_Type;
+    public int User_Type { get { return user_Type; } }
     #endregion
     private void Awake()
     {
@@ -45,7 +47,7 @@ public class LoginManager : MonoBehaviour
 
     // ユーザーデータをセットする
     public void SetUserData(int id, string loginId, string userName,
-        string lastLogin, string createdTime, string midfiedTime, bool connectionStatus)
+        string lastLogin, string createdTime, string midfiedTime, bool connectionStatus, int userType)
     {
         manage_id = id;
         login_id = loginId;
@@ -54,5 +56,6 @@ public class LoginManager : MonoBehaviour
         created = createdTime;
         modified = midfiedTime;
         connection_status = connectionStatus;
+        user_Type = userType;
     }
 }

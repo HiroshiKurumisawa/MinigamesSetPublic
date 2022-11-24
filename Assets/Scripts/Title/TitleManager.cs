@@ -115,7 +115,7 @@ public class TitleManager : MonoBehaviour
                 else                                    // ƒƒOƒCƒ“‚Å‚«‚é‚Æ‚«
                 {
                     loginManagerCS.SetUserData(resData.account_data.manage_id, resData.account_data.login_id, resData.account_data.user_name,
-                             resData.account_data.last_login, resData.account_data.created, resData.account_data.modified, resData.account_data.connection_status);
+                             resData.account_data.last_login, resData.account_data.created, resData.account_data.modified, resData.account_data.connection_status, 0);
 
                     print(resData.account_data.user_name);
 
@@ -154,7 +154,7 @@ public class TitleManager : MonoBehaviour
         {
             GuestLoginRoot resData = JsonUtility.FromJson<GuestLoginRoot>(request.downloadHandler.text);
             loginManagerCS.SetUserData(resData.guest_data.manage_id, resData.guest_data.login_id, resData.guest_data.user_name,
-                resData.guest_data.last_login, resData.guest_data.created, resData.guest_data.modified, resData.guest_data.connection_status);
+                resData.guest_data.last_login, resData.guest_data.created, resData.guest_data.modified, resData.guest_data.connection_status, 1);
 
             print(resData.guest_data.user_name);
 

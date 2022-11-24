@@ -40,6 +40,7 @@ public class LogOutManager : MonoBehaviour
         WWWForm postData = new WWWForm();
         postData.AddField("manageID", loginManagerCS.Manage_id);
         postData.AddField("userName", loginManagerCS.User_name);
+        postData.AddField("userType", loginManagerCS.User_Type);
 
         // POSTでデータ送信
         using UnityWebRequest request = UnityWebRequest.Post(logOutURL, postData);
