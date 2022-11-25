@@ -9,26 +9,43 @@ public class LogOutManager : MonoBehaviour
 {
     #region 変数群
     LoginManager loginManagerCS;
+    LobbyManager lobbyManagerCS;
 
-    // ゲストログイン
-    bool isLogOut = false;                                          // ログアウトフラグ
+    [SerializeField]GameObject logOutForm;
+
+    bool openLogOutForm = false;
+    bool isLogOut = false;                                     // ログアウトフラグ
     string logOutURL = "http://localhost/user/logout";         // ログアウトURL
     #endregion
 
     void Start()
     {
+        logOutForm.SetActive(false);
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
+        lobbyManagerCS = GameObject.FindObjectOfType<LobbyManager>();
     }
 
     void Update()
     {
-        
+
+    }
+
+    public void OpenLogOutForm()
+    {
+        logOutForm.SetActive(true);
+        openLogOutForm = true;
+    }
+
+    public void CloseLogOutForm()
+    {
+        logOutForm.SetActive(false);
+        openLogOutForm = false;
     }
 
     // ログアウトボタンが押されたとき(LogOut用UIのEventTriggerのPointerClickに使う)
     public void LogOut()
     {
-        if (!isLogOut)
+        if (!isLogOut && openLogOutForm)
         {
             isLogOut = true;
             StartCoroutine(LogOutProcess());
