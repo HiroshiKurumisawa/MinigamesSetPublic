@@ -9,36 +9,37 @@ using UnityEngine.SceneManagement; // ƒV[ƒ“‘JˆÚ—p(ƒtƒF[ƒhƒ}ƒl[ƒWƒƒ[ì¬í
 public class TitleManager : MonoBehaviour
 {
     #region •Ï”ŒQ
+    // ƒƒOƒCƒ“Œã‚É•K—v‚Èƒf[ƒ^•Û‚·‚é‚½‚ß‚ÌƒXƒNƒŠƒvƒg
     LoginManager loginManagerCS;
 
     // ƒAƒJƒEƒ“ƒgƒƒOƒCƒ“
-    bool isAccountLogin = false;                                        // ƒAƒJƒEƒ“ƒgƒƒOƒCƒ“ƒtƒ‰ƒO
-    const string accountLoginURL = "http://localhost/user/account/login";
-    string loginUser_name = "";
-    string loginUser_password = "";
+    bool isAccountLogin = false;                                            // ƒAƒJƒEƒ“ƒgƒƒOƒCƒ“ƒtƒ‰ƒO
+    const string accountLoginURL = "http://localhost/user/account/login";   // ƒAƒJƒEƒ“ƒgƒƒOƒCƒ“URL
+    string loginUser_name = "";                                             // ƒƒOƒCƒ“ƒ†[ƒU[–¼
+    string loginUser_password = "";                                         // ƒƒOƒCƒ“ƒpƒXƒ[ƒh
     [Header("ƒ†[ƒU[ƒƒOƒCƒ“ŠÖŒW")]
-    [SerializeField] GameObject massage_LoginText;                      // ƒƒbƒZ[ƒWƒeƒLƒXƒg(ƒƒOƒCƒ“)
-    [SerializeField] TMP_InputField user_nameField_Login;                     // ƒ†[ƒU[ƒl[ƒ€“ü—ÍƒtƒB[ƒ‹ƒh(ƒƒOƒCƒ“)
-    [SerializeField] TMP_InputField passwordField_Login;                      // ƒpƒXƒ[ƒh“ü—ÍƒtƒB[ƒ‹ƒh(ƒƒOƒCƒ“)
+    [SerializeField] GameObject massage_LoginText;                          // ƒƒbƒZ[ƒWƒeƒLƒXƒg(ƒƒOƒCƒ“)
+    [SerializeField] TMP_InputField user_nameField_Login;                   // ƒ†[ƒU[ƒl[ƒ€“ü—ÍƒtƒB[ƒ‹ƒh(ƒƒOƒCƒ“)
+    [SerializeField] TMP_InputField passwordField_Login;                    // ƒpƒXƒ[ƒh“ü—ÍƒtƒB[ƒ‹ƒh(ƒƒOƒCƒ“)
 
     // ƒQƒXƒgƒƒOƒCƒ“
-    bool isGuestLogin = false;                                          // ƒQƒXƒgƒƒOƒCƒ“ƒtƒ‰ƒO
-    const string guestLoginURL = "http://localhost/user/guest/login";   // ƒQƒXƒgƒƒOƒCƒ“URL
+    bool isGuestLogin = false;                                              // ƒQƒXƒgƒƒOƒCƒ“ƒtƒ‰ƒO
+    const string guestLoginURL = "http://localhost/user/guest/login";       // ƒQƒXƒgƒƒOƒCƒ“URL
 
     // ƒ†[ƒU[ì¬
-    bool openCreateForm = false;                                        // ƒ†[ƒU[ì¬ƒtƒH[ƒ€‚ªŠJ‚¢‚Ä‚¢‚é‚©
-    bool isCreateAccont = false;                                        // ì¬ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚©‚Ç‚¤‚©
+    bool openCreateForm = false;                                            // ƒ†[ƒU[ì¬ƒtƒH[ƒ€‚ªŠJ‚¢‚Ä‚¢‚é‚©
+    bool isCreateAccont = false;                                            // ì¬ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚©‚Ç‚¤‚©
     public bool IsCreateAccount { get { return isCreateAccont; } }
-    const string createAccountURL = "http://localhost/user/account/create";         // ƒAƒJƒEƒ“ƒgì¬URL
-    string createUser_name = "";
-    string createUser_password = "";
-    string createUser_rePassword = "";
+    const string createAccountURL = "http://localhost/user/account/create"; // ƒAƒJƒEƒ“ƒgì¬URL
+    string createUser_name = "";                                            // ƒAƒJƒEƒ“ƒgì¬ƒ†[ƒU–¼
+    string createUser_password = "";                                        // ƒAƒJƒEƒ“ƒgì¬ƒpƒXƒ[ƒh
+    string createUser_rePassword = "";                                      // ƒAƒJƒEƒ“ƒgì¬ƒpƒXƒ[ƒhÄ“ü—Í
     [Header("ƒ†[ƒU[ì¬ŠÖŒW")]
-    [SerializeField] GameObject createFormUI;                           // ƒ†[ƒU[ì¬ƒtƒH[ƒ€
-    [SerializeField] GameObject massageText;                            // ƒƒbƒZ[ƒWƒeƒLƒXƒg
-    [SerializeField] TMP_InputField user_nameField;                     // ƒ†[ƒU[ƒl[ƒ€“ü—ÍƒtƒB[ƒ‹ƒh
-    [SerializeField] TMP_InputField passwordField;                      // ƒpƒXƒ[ƒh“ü—ÍƒtƒB[ƒ‹ƒh
-    [SerializeField] TMP_InputField rePasswordField;                    // ƒpƒXƒ[ƒhÄ“ü—ÍƒtƒB[ƒ‹ƒh
+    [SerializeField] GameObject createFormUI;                               // ƒ†[ƒU[ì¬ƒtƒH[ƒ€
+    [SerializeField] GameObject massageText;                                // ƒƒbƒZ[ƒWƒeƒLƒXƒg
+    [SerializeField] TMP_InputField user_nameField;                         // ƒ†[ƒU[ƒl[ƒ€“ü—ÍƒtƒB[ƒ‹ƒh
+    [SerializeField] TMP_InputField passwordField;                          // ƒpƒXƒ[ƒh“ü—ÍƒtƒB[ƒ‹ƒh
+    [SerializeField] TMP_InputField rePasswordField;                        // ƒpƒXƒ[ƒhÄ“ü—ÍƒtƒB[ƒ‹ƒh
     #endregion
 
     private void Awake()
@@ -117,8 +118,6 @@ public class TitleManager : MonoBehaviour
                     loginManagerCS.SetUserData(resData.account_data.manage_id, resData.account_data.login_id, resData.account_data.user_name,
                              resData.account_data.last_login, resData.account_data.created, resData.account_data.modified, resData.account_data.connection_status, 0);
 
-                    print(resData.account_data.user_name);
-
                     SceneManager.LoadScene("Lobby");        // ƒV[ƒ“‘JˆÚ
                 }
             }
@@ -155,8 +154,6 @@ public class TitleManager : MonoBehaviour
             GuestLoginRoot resData = JsonUtility.FromJson<GuestLoginRoot>(request.downloadHandler.text);
             loginManagerCS.SetUserData(resData.guest_data.manage_id, resData.guest_data.login_id, resData.guest_data.user_name,
                 resData.guest_data.last_login, resData.guest_data.created, resData.guest_data.modified, resData.guest_data.connection_status, 1);
-
-            print(resData.guest_data.user_name);
 
             SceneManager.LoadScene("Lobby");        // ƒV[ƒ“‘JˆÚ
         }
@@ -245,6 +242,7 @@ public class TitleManager : MonoBehaviour
     #endregion
 }
 
+#region JSON•ÏŠ·ƒNƒ‰ƒX
 // ƒAƒJƒEƒ“ƒgƒƒOƒCƒ“‚ÌŒ‹‰Ê‚ÌJSON‚ğ•ÏŠ·‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX
 [Serializable]
 public class AccountData
@@ -258,7 +256,6 @@ public class AccountData
     public string modified;
     public bool connection_status;
 }
-
 [Serializable]
 public class AccountLoginRoot
 {
@@ -279,7 +276,6 @@ public class GuestData
     public string modified;
     public bool connection_status;
 }
-
 [Serializable]
 public class GuestLoginRoot
 {
@@ -294,3 +290,4 @@ public class AccountCreateRoot
     public int result;
     public int requestMessage;
 }
+#endregion

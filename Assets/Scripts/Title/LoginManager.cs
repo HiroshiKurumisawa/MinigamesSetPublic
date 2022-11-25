@@ -27,8 +27,8 @@ public class LoginManager : MonoBehaviour
     bool connection_status;
     public bool Connection_status { get { return connection_status; } }
     //------------------------
-    // 接続しているアカウントの種類
-    int user_Type;
+    // 接続しているアカウントの種類(0=アカウントユーザー、 1=ゲストユーザー)
+    int user_Type; 
     public int User_Type { get { return user_Type; } }
     #endregion
     private void Awake()
