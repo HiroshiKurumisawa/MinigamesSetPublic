@@ -9,18 +9,20 @@ public class LobbyManager : MonoBehaviour
     #region 変数群
     LoginManager loginManagerCS;
 
-    // テスト用
-    [SerializeField]GameObject userNameText;
+    // ユーザー名表示
+    [SerializeField] GameObject userNameText;
+
     #endregion
 
     void Start()
     {
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
-        userNameText.GetComponent<TextMeshProUGUI>().text = loginManagerCS.User_name;
+        if (loginManagerCS != null) { userNameText.GetComponent<TextMeshProUGUI>().text = loginManagerCS.User_name; }
+        else { userNameText.GetComponent<TextMeshProUGUI>().text = "No Data"; }
     }
 
     void Update()
     {
-        
+
     }
 }
