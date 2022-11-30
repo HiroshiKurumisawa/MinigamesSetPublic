@@ -9,7 +9,6 @@ public class LogOutManager : MonoBehaviour
 {
     #region ïœêîåQ
     LoginManager loginManagerCS;
-    LobbyManager lobbyManagerCS;
 
     [SerializeField]GameObject logOutForm;
 
@@ -22,7 +21,6 @@ public class LogOutManager : MonoBehaviour
     {
         logOutForm.SetActive(false);
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
-        lobbyManagerCS = GameObject.FindObjectOfType<LobbyManager>();
     }
 
     void Update()
