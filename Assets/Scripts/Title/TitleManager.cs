@@ -190,6 +190,7 @@ public class TitleManager : MonoBehaviour
         if (openCreateForm)
         {
             openCreateForm = false;
+            massageText.GetComponent<TextMeshProUGUI>().text = "";
             createFormUI.SetActive(false);
         }
     }
