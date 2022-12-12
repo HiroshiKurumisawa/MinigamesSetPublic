@@ -28,15 +28,16 @@ public class LobbyManager : MonoBehaviour
     bool updateSelectForm = false;
     const string updateSelectFormURL = "http://localhost/room/select_form_update";
     [Header("ルーム参加関係")]
-    [SerializeField] GameObject roomsSelectForm;
+    [SerializeField] public GameObject roomsSelectForm;
     [SerializeField] GameObject roomUIprefab;
+    [SerializeField] GameObject roomScrollView;
     // ルーム関係
     int entryRoomUsers;
     [Header("ルーム関係")]
     [SerializeField] GameObject[] entryUsersUI;
     [SerializeField] GameObject[] userRadyIcon;
     [SerializeField] GameObject roomForm;
-    [SerializeField] GameObject roomName;
+    [SerializeField] GameObject roomNameTextUI;
     [SerializeField] GameObject roomKeyRockIcon;
     [SerializeField] GameObject roomPasswordText;
     [SerializeField] GameObject message_RoomText;
@@ -133,14 +134,7 @@ public class LobbyManager : MonoBehaviour
                 passwordField_CreateRoom.text = "";
                 massage_CreateRoomText.GetComponent<TextMeshProUGUI>().text = "";
                 createRoomForm.SetActive(false);
-                // ルーム画面表示
-                roomForm.SetActive(true);
-                roomName.GetComponent<TextMeshProUGUI>().text = resData.roomData.room_name;
-                if (resData.roomData.room_password != "") { roomPasswordText.GetComponent<TextMeshProUGUI>().text = resData.roomData.room_password; }
-                else { roomPasswordText.GetComponent<TextMeshProUGUI>().text = "なし"; }
-                entryUsersUI[0].GetComponent<TextMeshProUGUI>().text = resData.roomData.user_host;
-                //---------------------------------
-
+                OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry);
             }
             else if (resData.requestMessage == 1)                   // エラーが返ってきたとき
             {
@@ -209,10 +203,10 @@ public class LobbyManager : MonoBehaviour
 
             for (int i = 0; i < resData.allRoomList.Count; i++)
             {
-                GameObject roomUIclone = Instantiate(roomUIprefab, transform.position, Quaternion.identity, roomsSelectForm.transform);
+                GameObject roomUIclone = Instantiate(roomUIprefab, transform.position, Quaternion.identity, roomScrollView.transform);
                 roomUIclone.name = "Room_" + i.ToString();
                 SelectRoomManager selectRoomManagerCS = roomUIclone.GetComponent<SelectRoomManager>();
-                selectRoomManagerCS.SetRoomData(resData.allRoomList[i].room_name, resData.allRoomList[i].in_room_users, resData.allRoomList[i].max_room_users);
+                selectRoomManagerCS.SetRoomData(resData.allRoomList[i].room_name, resData.allRoomList[i].room_password, resData.allRoomList[i].in_room_users, resData.allRoomList[i].max_room_users);
             }
             updateSelectForm = false;
         }
@@ -220,6 +214,16 @@ public class LobbyManager : MonoBehaviour
     }
     #endregion
     #region ルーム関係
+    // ルーム画面表示
+    public void OpenRoomForm(string roomName, string roomPass, string hostUser, string EntryUser)
+    {
+        roomForm.SetActive(true);
+        roomNameTextUI.GetComponent<TextMeshProUGUI>().text = roomName;
+        if (roomPass != "") { roomPasswordText.GetComponent<TextMeshProUGUI>().text = roomPass; }
+        else { roomPasswordText.GetComponent<TextMeshProUGUI>().text = "なし"; }
+        entryUsersUI[0].GetComponent<TextMeshProUGUI>().text = EntryUser; 
+        entryUsersUI[1].GetComponent<TextMeshProUGUI>().text = hostUser; 
+    }
     public void RoomLeave()
     {
 
@@ -256,5 +260,6 @@ public class LobbyManager : MonoBehaviour
         public int result;
         public List<RoomData> allRoomList = new List<RoomData>();
     }
+
     #endregion
 }
