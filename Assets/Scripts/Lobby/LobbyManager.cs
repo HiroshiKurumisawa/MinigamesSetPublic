@@ -32,7 +32,8 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] GameObject roomUIprefab;
     [SerializeField] GameObject roomScrollView;
     // ルーム関係
-    int entryRoomUsers;
+    bool updateRoomForm = false;
+    const string updateRoomFormURL = "http://localhost/room/room_form_update";
     [Header("ルーム関係")]
     [SerializeField] GameObject[] entryUsersUI;
     [SerializeField] GameObject[] userRadyIcon;
@@ -59,6 +60,11 @@ public class LobbyManager : MonoBehaviour
     void Update()
     {
 
+    }
+
+    private void FixedUpdate()
+    {
+        RoomKeepUpdate();
     }
 
     // ユーザーネーム表示
@@ -221,12 +227,43 @@ public class LobbyManager : MonoBehaviour
         roomNameTextUI.GetComponent<TextMeshProUGUI>().text = roomName;
         if (roomPass != "") { roomPasswordText.GetComponent<TextMeshProUGUI>().text = roomPass; }
         else { roomPasswordText.GetComponent<TextMeshProUGUI>().text = "なし"; }
-        entryUsersUI[0].GetComponent<TextMeshProUGUI>().text = EntryUser; 
-        entryUsersUI[1].GetComponent<TextMeshProUGUI>().text = hostUser; 
+        entryUsersUI[0].GetComponent<TextMeshProUGUI>().text = hostUser;
+        entryUsersUI[1].GetComponent<TextMeshProUGUI>().text = EntryUser;
     }
     public void RoomLeave()
     {
 
+    }
+    // ルーム情報を最新にし続ける
+    private void RoomKeepUpdate()
+    {
+        if (roomForm.activeSelf == true && !updateRoomForm)
+        {
+            updateRoomForm = true;
+            StartCoroutine(RoomKeepUpdateProcess());
+        }
+    }
+    IEnumerator RoomKeepUpdateProcess()
+    {
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+        postData.AddField("room_name", roomNameTextUI.GetComponent<TextMeshProUGUI>().text);
+
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(updateRoomFormURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+        else
+        {
+            RefreshRoom resData = JsonUtility.FromJson<RefreshRoom>(request.downloadHandler.text);
+            OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry);
+            updateRoomForm = false;
+        }
     }
     #endregion
 
@@ -261,5 +298,12 @@ public class LobbyManager : MonoBehaviour
         public List<RoomData> allRoomList = new List<RoomData>();
     }
 
+    // ルーム表示中
+    [Serializable]
+    public class RefreshRoom
+    {
+        public int result;
+        public RoomData roomData;
+    }
     #endregion
 }
