@@ -364,6 +364,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16bd23ce56b82134f86b32264b6d2222, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entryButton: {fileID: 7176702971085774262}
   roomNameText: {fileID: 677000777801779010}
   roomUserCountText: {fileID: 677000777759023488}
 --- !u!1 &7176702971085774262

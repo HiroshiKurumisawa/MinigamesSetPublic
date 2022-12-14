@@ -26,11 +26,20 @@ public class LobbyManager : MonoBehaviour
     // ルーム参加関係
     bool isOpenSelectRoomForm = false;
     bool updateSelectForm = false;
+    bool isOpenInputRoomPasswordForm = false;
+    bool isEntryRoomInPass = false;
+    const string entryRoomURL = "http://localhost/room/entry";
     const string updateSelectFormURL = "http://localhost/room/select_form_update";
+    string inputRoomPasswordFormRoomName = "";
+    string inputRoomPassword = "";
     [Header("ルーム参加関係")]
     [SerializeField] public GameObject roomsSelectForm;
     [SerializeField] GameObject roomUIprefab;
     [SerializeField] GameObject roomScrollView;
+    [SerializeField] GameObject inputRoomPasswordForm;
+    [SerializeField] GameObject inputRoomPasswordRoomNameText;
+    [SerializeField] GameObject inputRoomPasswordMessageText;
+    [SerializeField] TMP_InputField passwordField_EntryRoom;                    // パスワード入力フィールド(ルーム参加)
     // ルーム関係
     bool updateRoomForm = false;
     const string updateRoomFormURL = "http://localhost/room/room_form_update";
@@ -46,6 +55,7 @@ public class LobbyManager : MonoBehaviour
 
     void Start()
     {
+        inputRoomPasswordMessageText.GetComponent<TextMeshProUGUI>().text = "";
         massage_CreateRoomText.GetComponent<TextMeshProUGUI>().text = "";
         message_RoomText.GetComponent<TextMeshProUGUI>().text = "";
         entryUsersUI[0].GetComponent<TextMeshProUGUI>().text = "";
@@ -173,6 +183,76 @@ public class LobbyManager : MonoBehaviour
             roomsSelectForm.SetActive(false);
         }
     }
+    // ルームパスワード入力画面
+    public void OpenInputRoomPasswordForm(string roomName)
+    {
+        if (!isOpenInputRoomPasswordForm)
+        {
+            isOpenInputRoomPasswordForm = true;
+            inputRoomPasswordFormRoomName = roomName;
+            inputRoomPasswordForm.SetActive(true);
+            inputRoomPasswordRoomNameText.GetComponent<TextMeshProUGUI>().text = inputRoomPasswordFormRoomName;
+        }
+    }
+    public void CloseInputRoomPasswordForm()
+    {
+        if (isOpenInputRoomPasswordForm)
+        {
+            isOpenInputRoomPasswordForm = false;
+            inputRoomPasswordForm.SetActive(false);
+        }
+    }
+    // パスワードinput
+    public void InputPasswordEntryRoom()
+    {
+        inputRoomPassword = passwordField_EntryRoom.text;
+    }
+    public void EntryRoomInPass()
+    {
+        if(!isEntryRoomInPass)
+        {
+            isEntryRoomInPass = true;
+            StartCoroutine(EntryRoomInPassProcess());
+        }
+    }
+    IEnumerator EntryRoomInPassProcess()
+    {
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+        postData.AddField("room_name", inputRoomPasswordFormRoomName);
+        postData.AddField("room_password", inputRoomPassword);
+        postData.AddField("room_entry_user", loginManagerCS.User_name);
+
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(entryRoomURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+        else
+        {
+            EntryRoomInpassRoot resData = JsonUtility.FromJson<EntryRoomInpassRoot>(request.downloadHandler.text);
+
+            if (resData.requestMessage == 0) // 成功したとき
+            {
+                passwordField_EntryRoom.text = "";
+                roomsSelectForm.SetActive(false);
+                OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry);
+            }
+            else if (resData.requestMessage == 2)                   // エラー2が返ってきたとき
+            {
+                inputRoomPasswordMessageText.GetComponent<TextMeshProUGUI>().text = "パスワードが違います";
+            }
+            else
+            {
+                print("error");
+            }
+        }
+    }
+
     // ルーム情報更新
     public void UpdateTotalRooms()
     {
@@ -304,6 +384,29 @@ public class LobbyManager : MonoBehaviour
     {
         public int result;
         public RoomData roomData;
+    }
+
+    // ルーム参加(パスワードがある場合)
+    [Serializable]
+    public class EntryRoomDataInPass
+    {
+        public int id;
+        public string room_name;
+        public string room_password;
+        public string max_room_users;
+        public string in_room_users;
+        public string created_at;
+        public string updated_at;
+        public string user_host;
+        public string user_entry;
+    }
+    // ルーム参加
+    [Serializable]
+    public class EntryRoomInpassRoot
+    {
+        public int result;
+        public int requestMessage;
+        public EntryRoomDataInPass roomData;
     }
     #endregion
 }

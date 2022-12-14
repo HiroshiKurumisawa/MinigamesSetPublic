@@ -10,6 +10,7 @@ public class SelectRoomManager : MonoBehaviour
     LoginManager loginManagerCS;
     LobbyManager lobbyManagerCS;
 
+    [SerializeField] GameObject entryButton;
     [SerializeField] TextMeshProUGUI roomNameText;
     [SerializeField] TextMeshProUGUI roomUserCountText;
 
@@ -17,8 +18,10 @@ public class SelectRoomManager : MonoBehaviour
 
     string roomName;
     string roomPass;
-    string roomUserEntryNum;
-    string roomUserMaxNum;
+    string roomUserEntryNumString;
+    string roomUserMaxNumString;
+    int roomUserEntryNumInt;
+    int roomUserMaxNumInt;
     bool isRoomEntry = false;
 
     private void Start()
@@ -27,25 +30,39 @@ public class SelectRoomManager : MonoBehaviour
         lobbyManagerCS = GameObject.FindObjectOfType<LobbyManager>();
     }
 
+    private void FixedUpdate()
+    {
+        if(roomUserEntryNumInt < roomUserMaxNumInt)
+        {
+            entryButton.SetActive(true);
+        }
+        else
+        {
+            entryButton.SetActive(false);
+        }
+    }
+
     public void SetRoomData(string name, string pass, string entryNum, string maxNum)
     {
         roomName = name;
         roomPass = pass;
-        roomUserEntryNum = entryNum;
-        roomUserMaxNum = maxNum;
+        roomUserEntryNumString = entryNum;
+        roomUserMaxNumString = maxNum;
+        roomUserEntryNumInt = Convert.ToInt32(entryNum);
+        roomUserMaxNumInt = Convert.ToInt32(maxNum);
 
         roomNameText.text = roomName;
-        roomUserCountText.text = roomUserEntryNum + "/" + roomUserMaxNum;
+        roomUserCountText.text = roomUserEntryNumString + "/" + roomUserMaxNumString;
     }
 
     // ルーム参加
     public void EntryRoom()
     {
-        if (!isRoomEntry && this.roomPass != "")
+        if (!isRoomEntry && this.roomPass != "" && roomUserEntryNumInt < roomUserMaxNumInt) // パスワードがあるときはパスワードフォームを開く
         {
-
+            lobbyManagerCS.OpenInputRoomPasswordForm(this.roomName);
         }
-        else
+        else if (!isRoomEntry && this.roomPass == "" && roomUserEntryNumInt < roomUserMaxNumInt)
         {
             isRoomEntry = true;
             StartCoroutine(EntryRoomProcess());
@@ -71,17 +88,20 @@ public class SelectRoomManager : MonoBehaviour
         else
         {
             EntryRoomRoot resData = JsonUtility.FromJson<EntryRoomRoot>(request.downloadHandler.text);
-            
+
             if (resData.requestMessage == 0) // 成功したとき
             {
                 lobbyManagerCS.roomsSelectForm.SetActive(false);
                 lobbyManagerCS.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry);
             }
-            else if (resData.requestMessage == 1)                   // エラーが返ってきたとき
+            else if (resData.requestMessage == 2)                   // エラー2が返ってきたとき
+            {
+                lobbyManagerCS.UpdateTotalRooms();
+            }
+            else
             {
                 print("error");
             }
-
         }
         isRoomEntry = false;
     }
