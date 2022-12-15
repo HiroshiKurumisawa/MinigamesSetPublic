@@ -102,7 +102,7 @@ public class SelectRoomManager : MonoBehaviour
             if (resData.requestMessage == 0) // 成功したとき
             {
                 lobbyManagerCS.roomsSelectForm.SetActive(false);
-                lobbyManagerCS.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry);
+                lobbyManagerCS.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry);
             }
             else if (resData.requestMessage == 2)                   // エラー2が返ってきたとき
             {
@@ -129,6 +129,8 @@ public class EntryRoomData
     public string updated_at;
     public string user_host;
     public string user_entry;
+    public bool ready_status_host;
+    public bool ready_status_entry;
 }
 // ルーム参加
 [Serializable]

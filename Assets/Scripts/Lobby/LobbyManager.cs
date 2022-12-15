@@ -33,6 +33,8 @@ public class LobbyManager : MonoBehaviour
     string inputRoomPasswordFormRoomName = "";
     string inputRoomPassword = "";
     [Header("ルーム参加関係")]
+    bool isHostReady = false;
+    bool isEntryRedy = false;
     [SerializeField] public GameObject roomsSelectForm;
     [SerializeField] GameObject roomUIprefab;
     [SerializeField] GameObject roomScrollView;
@@ -42,6 +44,8 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] TMP_InputField passwordField_EntryRoom;                    // パスワード入力フィールド(ルーム参加)
     // ルーム関係
     bool updateRoomForm = false;
+    bool leaveRoom = false;
+    const string leaveRoomURL = "http://localhost/room/leave_room";
     const string updateRoomFormURL = "http://localhost/room/room_form_update";
     [Header("ルーム関係")]
     [SerializeField] GameObject[] entryUsersUI;
@@ -150,7 +154,7 @@ public class LobbyManager : MonoBehaviour
                 passwordField_CreateRoom.text = "";
                 massage_CreateRoomText.GetComponent<TextMeshProUGUI>().text = "";
                 createRoomForm.SetActive(false);
-                OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry);
+                OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry);
             }
             else if (resData.requestMessage == 1)                   // エラーが返ってきたとき
             {
@@ -209,7 +213,7 @@ public class LobbyManager : MonoBehaviour
     }
     public void EntryRoomInPass()
     {
-        if(!isEntryRoomInPass)
+        if (!isEntryRoomInPass)
         {
             isEntryRoomInPass = true;
             StartCoroutine(EntryRoomInPassProcess());
@@ -240,7 +244,7 @@ public class LobbyManager : MonoBehaviour
             {
                 passwordField_EntryRoom.text = "";
                 roomsSelectForm.SetActive(false);
-                OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry);
+                OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry);
             }
             else if (resData.requestMessage == 2)                   // エラー2が返ってきたとき
             {
@@ -301,7 +305,7 @@ public class LobbyManager : MonoBehaviour
     #endregion
     #region ルーム関係
     // ルーム画面表示
-    public void OpenRoomForm(string roomName, string roomPass, string hostUser, string EntryUser)
+    public void OpenRoomForm(string roomName, string roomPass, string hostUser, string EntryUser, bool isReadyHost, bool isReadyEntry)
     {
         roomForm.SetActive(true);
         roomNameTextUI.GetComponent<TextMeshProUGUI>().text = roomName;
@@ -309,10 +313,48 @@ public class LobbyManager : MonoBehaviour
         else { roomPasswordText.GetComponent<TextMeshProUGUI>().text = "なし"; }
         entryUsersUI[0].GetComponent<TextMeshProUGUI>().text = hostUser;
         entryUsersUI[1].GetComponent<TextMeshProUGUI>().text = EntryUser;
+        isHostReady = isReadyHost;
+        isEntryRedy = isReadyEntry;
+        if (isHostReady) { userRadyIcon[0].SetActive(true); }
+        else { userRadyIcon[0].SetActive(false); }
+        if (isEntryRedy) { userRadyIcon[1].SetActive(true); }
+        else { userRadyIcon[1].SetActive(false); }
+
     }
     public void RoomLeave()
     {
+        if (!leaveRoom)
+        {
+            leaveRoom = true;
+            StartCoroutine(RoomLeaveProcess());
+        }
+    }
+    IEnumerator RoomLeaveProcess()
+    {
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+        postData.AddField("room_name", roomNameTextUI.GetComponent<TextMeshProUGUI>().text);
+        postData.AddField("room_leave_user", loginManagerCS.User_name);
 
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(leaveRoomURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+        else
+        {
+            LeaveRoom resData = JsonUtility.FromJson<LeaveRoom>(request.downloadHandler.text);
+            if (resData.result == 0)
+            {
+                roomForm.SetActive(false);
+                isOpenSelectRoomForm = false;
+            }
+            leaveRoom = false;
+        }
     }
     // ルーム情報を最新にし続ける
     private void RoomKeepUpdate()
@@ -341,7 +383,10 @@ public class LobbyManager : MonoBehaviour
         else
         {
             RefreshRoom resData = JsonUtility.FromJson<RefreshRoom>(request.downloadHandler.text);
-            OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry);
+            if (roomForm.activeSelf == true)
+            {
+                OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry);
+            }
             updateRoomForm = false;
         }
     }
@@ -361,6 +406,8 @@ public class LobbyManager : MonoBehaviour
         public string updated_at;
         public string user_host;
         public string user_entry;
+        public bool ready_status_host;
+        public bool ready_status_entry;
     }
     [Serializable]
     public class RoomCreateRoot
@@ -399,6 +446,8 @@ public class LobbyManager : MonoBehaviour
         public string updated_at;
         public string user_host;
         public string user_entry;
+        public bool ready_status_host;
+        public bool ready_status_entry;
     }
     // ルーム参加
     [Serializable]
@@ -407,6 +456,13 @@ public class LobbyManager : MonoBehaviour
         public int result;
         public int requestMessage;
         public EntryRoomDataInPass roomData;
+    }
+
+    // ルーム退出
+    [Serializable]
+    public class LeaveRoom
+    {
+        public int result;
     }
     #endregion
 }
