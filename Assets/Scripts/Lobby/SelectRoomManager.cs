@@ -11,6 +11,7 @@ public class SelectRoomManager : MonoBehaviour
     LobbyManager lobbyManagerCS;
 
     [SerializeField] GameObject entryButton;
+    [SerializeField] GameObject lockImage;
     [SerializeField] TextMeshProUGUI roomNameText;
     [SerializeField] TextMeshProUGUI roomUserCountText;
 
@@ -32,13 +33,22 @@ public class SelectRoomManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(roomUserEntryNumInt < roomUserMaxNumInt)
+        if (roomUserEntryNumInt < roomUserMaxNumInt)
         {
             entryButton.SetActive(true);
         }
         else
         {
             entryButton.SetActive(false);
+        }
+
+        if (roomPass != "") // 鍵のイメージを表示するか否か
+        {
+            lockImage.SetActive(true);
+        }
+        else
+        {
+            lockImage.SetActive(false);
         }
     }
 
