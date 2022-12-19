@@ -9,18 +9,12 @@ public class MainManager : MonoBehaviour
     LoginManager loginManagerCS;
     RoomDataManager roomDataManagerCS;
 
-    // テスト
-    [SerializeField] TextMeshProUGUI textRoom;
-    [SerializeField] TextMeshProUGUI textName;
 
     void Start()
     {
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
         roomDataManagerCS = GameObject.FindObjectOfType<RoomDataManager>();
 
-        // テスト
-        textRoom.text = "ログインしているユーザ:" + loginManagerCS.User_name;
-        textName.text = "ルーム名:" + roomDataManagerCS.Room_name;
     }
 
     void Update()
