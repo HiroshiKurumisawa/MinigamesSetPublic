@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class StageManager : MonoBehaviour
+public class StageManager : MonoBehaviour, IPointerClickHandler
 {
     ReversiManager reversiManagerCS;
 
@@ -11,5 +12,8 @@ public class StageManager : MonoBehaviour
         reversiManagerCS = GameObject.FindObjectOfType<ReversiManager>();
     }
 
-
+    public void OnPointerClick(PointerEventData pointerData)
+    {
+        reversiManagerCS.PutStoneOrPass(pointerData);
+    }
 }
