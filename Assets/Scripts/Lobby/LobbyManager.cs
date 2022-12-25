@@ -330,8 +330,13 @@ public class LobbyManager : MonoBehaviour
         else { userRadyIcon[1].SetActive(false); }
         if (loginManagerCS.User_name == hostUser) { gameStartButton.SetActive(true); }
         else { gameStartButton.SetActive(false); }
-        if (gameStart) { SceneManager.LoadScene("Main"); /*シーン遷移*/}
+        if (gameStart)
+        {
+
+            SceneManager.LoadScene("Main"); /*シーン遷移*/
+        }
     }
+
     // 準備完了
     public void Ready()
     {

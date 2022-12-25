@@ -1,20 +1,36 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 using TMPro;
+using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class ReversiManager : MonoBehaviour
 {
     #region 変数群
     // ゲーム状況関連
-    [SerializeField] GameObject endForm;
-    [SerializeField] TextMeshProUGUI endFormText;
+    [SerializeField] Canvas m_canvas;
+    [SerializeField, Header("終了時のUI")]
+    GameObject endForm;
+    [SerializeField, Header("終了時のUIに表示するText")]
+    TextMeshProUGUI endFormText;
+    [SerializeField, Header("終了後ロビーに戻るまでの時間表示Text")]
+    TextMeshProUGUI returnLobbyCount;
+    [SerializeField, Header("降参確認画面")]
+    GameObject surrenderFormUI;
+    [SerializeField, Header("相手が降参した時のText")]
+    GameObject surrenderText;
     [SerializeField, Header("黒石総数")]
     TextMeshProUGUI blackStonesText;
     [SerializeField, Header("白石総数")]
     TextMeshProUGUI whiteStonesText;
+    [SerializeField, Header("黒石ユーザー")]
+    TextMeshProUGUI blackStonesUser;
+    [SerializeField, Header("白石ユーザー")]
+    TextMeshProUGUI whiteStonesUser;
     const int blackTurnNum = 0;
     const int WhiteTrunNum = 1;
     const int blackWinNum = 2;
@@ -22,6 +38,16 @@ public class ReversiManager : MonoBehaviour
     const int drowNum = 4;
     int thisStatusNum;
     int allstonesNum = 0;
+    bool isGameEnd = false;
+    bool surrender = false;
+    bool surrenderForm = false;
+    bool updateGame = false;
+    bool sceneMove = false;
+    const float returnLobbyCountNum = 10f;
+    float returnLobbycountDownValue;
+    const string updateGameURL = "http://localhost/game/update_game";
+    const string putStoneURL = "http://localhost/game/putStone_game";
+    const string surrenderURL = "http://localhost/game/surrender_game";
     // 石配置、盤面用
     [SerializeField, Header("ベースステージ")]
     GameObject beaseStage;
@@ -49,22 +75,23 @@ public class ReversiManager : MonoBehaviour
     float countTime;
     bool isTimeCountStart = false;
     bool isPutOrPass = false;
+
+    LoginManager loginManagerCS;
+    RoomDataManager roomDataCS;
     #endregion
 
     void Start()
     {
+        loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
+        roomDataCS = GameObject.FindObjectOfType<RoomDataManager>();
         CreateStage();
         StartStonePut();
-    }
-
-    void Update()
-    {
-
     }
 
     void FixedUpdate()
     {
         LimitTime(limitTime);
+        UpdateGame();
         StoneCount();
         EndGame();
     }
@@ -73,24 +100,29 @@ public class ReversiManager : MonoBehaviour
     {
         if (thisStatusNum == whiteWinNum)
         {
-            endForm.SetActive(true);
-            endFormText.text = "ユーザー白の勝利";
+            if(allstonesNum<=64)
+            {
+                surrender = true;
+            }
+            ReturnLobby(returnLobbyCountNum, roomDataCS.User_entry + "(白)の勝利");
         }
         else if (thisStatusNum == blackWinNum)
         {
-            endForm.SetActive(true);
-            endFormText.text = "ユーザー黒の勝利";
+            if (allstonesNum <= 64)
+            {
+                surrender = true;
+            }
+            ReturnLobby(returnLobbyCountNum, roomDataCS.User_host + "(黒)の勝利");
         }
         else if (thisStatusNum == drowNum)
         {
-            endForm.SetActive(true);
-            endFormText.text = "引き分け";
+            ReturnLobby(returnLobbyCountNum, "引き分け");
         }
         else { return; }
     }
 
 
-
+    // 石の数を数える
     void StoneCount()
     {
         var whiteStones = GameObject.FindGameObjectsWithTag("White");
@@ -109,11 +141,39 @@ public class ReversiManager : MonoBehaviour
         {
             thisStatusNum = blackWinNum;
         }
-        else if (allstonesNum > 4 && whiteStones.Length == blackStones.Length)
+        else if (allstonesNum >= 64 && whiteStones.Length == blackStones.Length)
         {
             thisStatusNum = drowNum;
         }
 
+    }
+
+    // ゲーム終了後のカウントダウン(シーン遷移するための)
+    void ReturnLobby(float retrunSceneCountNum, string resultString)
+    {
+        if (!isGameEnd)
+        {
+            isGameEnd = true;
+            endForm.SetActive(true);
+            endFormText.text = resultString;
+            returnLobbycountDownValue = retrunSceneCountNum;
+            returnLobbyCount.text = returnLobbycountDownValue.ToString("00");
+            if (surrender)
+            {
+                surrenderText.SetActive(true);
+            }
+        }
+
+        if (returnLobbycountDownValue <= 0&& !sceneMove)
+        {
+            sceneMove = true;
+            SceneManager.LoadScene("Lobby"); /*シーン遷移*/
+        }
+        else
+        {
+            returnLobbycountDownValue -= Time.deltaTime;
+            returnLobbyCount.text = returnLobbycountDownValue.ToString("00");
+        }
     }
 
     // ステージ生成
@@ -181,10 +241,80 @@ public class ReversiManager : MonoBehaviour
     public void PutStoneOrPass(BaseEventData data)
     {
         var pointerObject = (data as PointerEventData).pointerClick;
-        if (!isPutOrPass && (thisStatusNum == blackTurnNum || thisStatusNum == WhiteTrunNum) && ((pointerObject.transform.childCount == 0 && IsPutImpossible()) || pointerObject.name == "PassButton"))
+        if (!isPutOrPass && (thisStatusNum == blackTurnNum && roomDataCS.User_host == loginManagerCS.User_name || thisStatusNum == WhiteTrunNum && roomDataCS.User_entry == loginManagerCS.User_name) && ((pointerObject.transform.childCount == 0 && IsPutImpossible()) || pointerObject.name == "PassButton"))
         {
-            isPutOrPass = true;
-            StonePut(pointerObject.name, thisStatusNum);
+            StartCoroutine(PutStonProcess(pointerObject.name));
+        }
+
+    }
+    IEnumerator PutStonProcess(string point)
+    {
+        var statusString = thisStatusNum.ToString();
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+        postData.AddField("room_name", roomDataCS.Room_name);
+        postData.AddField("put_point", point);
+        postData.AddField("game_status", statusString);
+
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(putStoneURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+    }
+
+    // ゲーム情報更新
+    void UpdateGame()
+    {
+        if (!updateGame)
+        {
+            updateGame = true;
+            StartCoroutine(GameUpdateProcess());
+        }
+    }
+    IEnumerator GameUpdateProcess()
+    {
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+        postData.AddField("room_name", roomDataCS.Room_name);
+
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(updateGameURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+        else
+        {
+            UpdateGame resData = JsonUtility.FromJson<UpdateGame>(request.downloadHandler.text);
+            if (resData.result == 0 && resData.gameData.room_name == roomDataCS.Room_name)
+            {
+                int status = int.Parse(resData.gameData.game_state);
+                if (status == blackTurnNum || status == WhiteTrunNum)
+                {
+                    var selectObj = GameObject.Find(resData.gameData.set_point);
+                    if (selectObj != null && selectObj.transform.childCount == 0)
+                    {
+                        isPutOrPass = true;
+                        thisStatusNum = status;
+                        StonePut(resData.gameData.set_point, thisStatusNum);
+                    }
+                    else if (selectObj != null && selectObj.transform.childCount != 0)
+                    {
+                        updateGame = false;
+                        yield break;
+                    }
+                }
+                else { thisStatusNum = status; }
+            }
+            updateGame = false;
         }
 
     }
@@ -208,11 +338,24 @@ public class ReversiManager : MonoBehaviour
                 stoneClone.name = "WhiteStone";
                 stoneClone.tag = "White";
             }
-            ReverseStoneProcess();
+
+            var rectpos = GameObject.Find(point).GetComponent<RectTransform>();
+            var world = GetWorldPositionFromRectPosition(rectpos);
+
+            ReverseStoneProcess(world);
         }
         else { return; }
+
     }
 
+    private Vector3 GetWorldPositionFromRectPosition(RectTransform rect)
+    {
+        //UI座標からスクリーン座標に変換
+        Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(m_canvas.worldCamera, rect.position);
+        return screenPos;
+    }
+
+    // 石の設置が出来るかの判定
     bool IsPutImpossible()
     {
         for (int i = 0; i < DirectionList.Count; i++)
@@ -229,13 +372,12 @@ public class ReversiManager : MonoBehaviour
         }
         return false;
     }
-
     bool PutImpossible(PointerEventData point, List<RaycastResult> ray, List<GameObject> reverseObjList, int directionNum, int count)
     {
         var keepRay = ray;
         var keepObj = reverseObjList;
         var errorNum = 0;
-        Vector3 addPoint = new Vector3(DirectionList[directionNum].x, DirectionList[directionNum].y, 0);
+        Vector3 addPoint = transform.TransformPoint(new Vector3(DirectionList[directionNum].x, DirectionList[directionNum].y, 0));
         point.position = Input.mousePosition + addPoint + (addPoint * count);
         EventSystem.current.RaycastAll(point, keepRay);
         foreach (RaycastResult result in keepRay)
@@ -292,7 +434,8 @@ public class ReversiManager : MonoBehaviour
         else { return false; }
     }
 
-    void ReverseStoneProcess()
+    // 石の反転処理
+    void ReverseStoneProcess(Vector2 putCell)
     {
         for (int i = 0; i < DirectionList.Count; i++)
         {
@@ -301,15 +444,15 @@ public class ReversiManager : MonoBehaviour
             //RaycastAllの結果格納用List
             List<RaycastResult> rayResult = new List<RaycastResult>();
             List<GameObject> reverseObj = new List<GameObject>();
-            ReverseStone(pointData, rayResult, reverseObj, i, 0);
+            ReverseStone(pointData, rayResult, reverseObj, putCell, i, 0);
         }
     }
-    void ReverseStone(PointerEventData point, List<RaycastResult> ray, List<GameObject> reverseObjList, int directionNum, int count)
+    void ReverseStone(PointerEventData point, List<RaycastResult> ray, List<GameObject> reverseObjList, Vector3 inputPos, int directionNum, int count)
     {
         var keepRay = ray;
         var keepObj = reverseObjList;
-        Vector3 addPoint = new Vector3(DirectionList[directionNum].x, DirectionList[directionNum].y, 0);
-        point.position = Input.mousePosition + addPoint + (addPoint * count);
+        Vector3 addPoint = transform.TransformPoint(new Vector3(DirectionList[directionNum].x, DirectionList[directionNum].y, 0));
+        point.position = transform.TransformPoint(inputPos) + addPoint + (addPoint * count);
         EventSystem.current.RaycastAll(point, keepRay);
         foreach (RaycastResult result in keepRay)
         {
@@ -334,7 +477,7 @@ public class ReversiManager : MonoBehaviour
                 {
                     count++;
                     keepObj.Add(targetObj);
-                    ReverseStone(point, keepRay, keepObj, directionNum, count);
+                    ReverseStone(point, keepRay, keepObj, inputPos, directionNum, count);
                     break;
                 }
             }
@@ -344,7 +487,7 @@ public class ReversiManager : MonoBehaviour
                 {
                     count++;
                     keepObj.Add(targetObj);
-                    ReverseStone(point, keepRay, keepObj, directionNum, count);
+                    ReverseStone(point, keepRay, keepObj, inputPos, directionNum, count);
                     break;
                 }
                 else if (targetObj.name.Contains("White"))
@@ -366,8 +509,12 @@ public class ReversiManager : MonoBehaviour
 
     }
 
+    // 一番最初に起こる処理
     void StartStonePut()
     {
+        blackStonesUser.text = roomDataCS.User_host;
+        whiteStonesUser.text = roomDataCS.User_entry;
+        surrenderText.SetActive(false);
         endForm.SetActive(false);
         StonePut("3-4", blackTurnNum);
         StonePut("3-3", WhiteTrunNum);
@@ -377,5 +524,74 @@ public class ReversiManager : MonoBehaviour
         whiteSpeachBalloon.SetActive(false);
     }
 
+    public void OpenSurrenderForm()
+    {
+        if (!surrenderForm && !isGameEnd)
+        {
+            surrenderForm = true;
+            surrenderFormUI.SetActive(true);
+        }
+    }
 
+    public void Surrender()
+    {
+        if (!surrender)
+        {
+            surrenderFormUI.SetActive(false);
+            if (roomDataCS.User_host == loginManagerCS.User_name) // 黒が降参したとき
+            {
+                StartCoroutine(SurrenderProcess(whiteWinNum));
+            }
+            else if (roomDataCS.User_entry == loginManagerCS.User_name) // 白が降参したとき
+            {
+                StartCoroutine(SurrenderProcess(blackWinNum));
+            }
+        }
+    }
+    IEnumerator SurrenderProcess(int status)
+    {
+        var statusString = status.ToString();
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+        postData.AddField("room_name", roomDataCS.Room_name);
+        postData.AddField("game_status", statusString);
+
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(surrenderURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+    }
+
+
+    public void NotSurrender()
+    {
+        if (surrenderForm)
+        {
+            surrenderForm = false;
+            surrenderFormUI.SetActive(false);
+        }
+    }
+}
+
+// ゲームデータ表示中
+[Serializable]
+public class UpdateGame
+{
+    public int result;
+    public GameData gameData;
+}
+[Serializable]
+public class GameData
+{
+    public int id;
+    public string room_name;
+    public string set_point;
+    public string game_state;
+    public string created_at;
+    public string updated_at;
 }
