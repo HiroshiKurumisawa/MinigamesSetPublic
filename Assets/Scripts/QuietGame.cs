@@ -3,47 +3,43 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
-using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
+using UnityEngine.SceneManagement; // シーン確認用
 
-public class LogOutManager : MonoBehaviour
+public class QuietGame : MonoBehaviour
 {
+    #region インスタンス関係
+    public static QuietGame Instance { get; private set; }
+    bool isVectory;
+    public bool IsVectory { get { return isVectory; } set { isVectory = value; } }
+    #endregion
     #region 変数群
     LoginManager loginManagerCS;
-
-    [SerializeField]GameObject logOutForm;
-
-    bool openLogOutForm = false;
-    bool isLogOut = false;                                     // ログアウトフラグ
     string logOutURL = "http://localhost/user/logout";         // ログアウトURL
     #endregion
 
-    void Start()
+    private void Awake()
     {
-        logOutForm.SetActive(false);
-        loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
-    }
-
-    public void OpenLogOutForm()
-    {
-        logOutForm.SetActive(true);
-        openLogOutForm = true;
-    }
-
-    public void CloseLogOutForm()
-    {
-        logOutForm.SetActive(false);
-        openLogOutForm = false;
-    }
-
-    // ログアウトボタンが押されたとき(LogOut用UIのEventTriggerのPointerClickに使う)
-    public void LogOut()
-    {
-        if (!isLogOut && openLogOutForm)
+        if (Instance == null)
         {
-            isLogOut = true;
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
+        if (SceneManager.GetActiveScene().name!="Title")
+        {
             StartCoroutine(LogOutProcess());
         }
     }
+
     IEnumerator LogOutProcess()
     {
         // POST送信用のフォームを作成
@@ -60,10 +56,6 @@ public class LogOutManager : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             print(request.error);
-        }
-        else
-        {
-            SceneManager.LoadScene("Title");        // シーン遷移
         }
     }
 }
