@@ -76,6 +76,9 @@ public class ReversiManager : MonoBehaviour
     bool isTimeCountStart = false;
     bool isPutOrPass = false;
 
+    // 一時的なURL
+    const string endGameURL= "http://localhost/game/end_game";
+
     LoginManager loginManagerCS;
     RoomDataManager roomDataCS;
     #endregion
@@ -167,12 +170,32 @@ public class ReversiManager : MonoBehaviour
         if (returnLobbycountDownValue <= 0&& !sceneMove)
         {
             sceneMove = true;
-            SceneManager.LoadScene("Lobby"); /*シーン遷移*/
+            StartCoroutine(EndGameProcess());
         }
         else
         {
             returnLobbycountDownValue -= Time.deltaTime;
             returnLobbyCount.text = returnLobbycountDownValue.ToString("00");
+        }
+    }
+    IEnumerator EndGameProcess()
+    {
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+        postData.AddField("room_name", roomDataCS.Room_name);
+
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(endGameURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+        else
+        {
+            SceneManager.LoadScene("Lobby"); /*シーン遷移*/
         }
     }
 
@@ -594,4 +617,10 @@ public class GameData
     public string game_state;
     public string created_at;
     public string updated_at;
+}
+
+[Serializable]
+public class DeleteRoom
+{
+    public int result;
 }

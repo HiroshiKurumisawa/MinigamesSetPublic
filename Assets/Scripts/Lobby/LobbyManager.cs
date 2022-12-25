@@ -332,7 +332,6 @@ public class LobbyManager : MonoBehaviour
         else { gameStartButton.SetActive(false); }
         if (gameStart)
         {
-
             SceneManager.LoadScene("Main"); /*ƒV[ƒ“‘JˆÚ*/
         }
     }
