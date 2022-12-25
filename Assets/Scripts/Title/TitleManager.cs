@@ -40,6 +40,10 @@ public class TitleManager : MonoBehaviour
     [SerializeField] TMP_InputField user_nameField;                         // ユーザーネーム入力フィールド
     [SerializeField] TMP_InputField passwordField;                          // パスワード入力フィールド
     [SerializeField] TMP_InputField rePasswordField;                        // パスワード再入力フィールド
+
+    [Header("ゲーム終了関係")]
+    [SerializeField] GameObject quitGameForm;
+    bool isOpenQuitGameForm = false;
     #endregion
 
     private void Awake()
@@ -52,11 +56,6 @@ public class TitleManager : MonoBehaviour
     void Start()
     {
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
-    }
-
-    void Update()
-    {
-
     }
 
     #region アカウントログイン関係
@@ -190,6 +189,7 @@ public class TitleManager : MonoBehaviour
         if (openCreateForm)
         {
             openCreateForm = false;
+            massageText.GetComponent<TextMeshProUGUI>().text = "";
             createFormUI.SetActive(false);
         }
     }
@@ -238,6 +238,35 @@ public class TitleManager : MonoBehaviour
             }
         }
         isCreateAccont = false;
+    }
+    #endregion
+
+    #region ゲーム終了関係
+    public void OpenQuitGameForm()
+    {
+        if (!isOpenQuitGameForm)
+        {
+            isOpenQuitGameForm = true;
+            quitGameForm.SetActive(true);
+        }
+    }
+
+    public void CloseQuitGameForm()
+    {
+        if (isOpenQuitGameForm)
+        {
+            isOpenQuitGameForm = false;
+            quitGameForm.SetActive(false);
+        }
+    }
+
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+#else
+    Application.Quit();//ゲームプレイ終了
+#endif
     }
     #endregion
 }
