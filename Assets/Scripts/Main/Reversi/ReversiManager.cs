@@ -45,9 +45,9 @@ public class ReversiManager : MonoBehaviour
     bool sceneMove = false;
     const float returnLobbyCountNum = 10f;
     float returnLobbycountDownValue;
-    const string updateGameURL = "http://localhost/game/update_game";
-    const string putStoneURL = "http://localhost/game/putStone_game";
-    const string surrenderURL = "http://localhost/game/surrender_game";
+    const string updateGameURL = "http://54.168.79.41/game/update_game";
+    const string putStoneURL = "http://54.168.79.41/game/putStone_game";
+    const string surrenderURL = "http://54.168.79.41/game/surrender_game";
     // 石配置、盤面用
     [SerializeField, Header("ベースステージ")]
     GameObject beaseStage;
@@ -77,7 +77,7 @@ public class ReversiManager : MonoBehaviour
     bool isPutOrPass = false;
 
     // 一時的なURL
-    const string endGameURL= "http://localhost/game/end_game";
+    const string endGameURL= "http://54.168.79.41/game/end_game";
 
     LoginManager loginManagerCS;
     RoomDataManager roomDataCS;
