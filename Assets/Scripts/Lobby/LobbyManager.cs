@@ -19,7 +19,7 @@ public class LobbyManager : MonoBehaviour
     // ルーム作成関係
     [SerializeField] GameObject createRoomForm;
     bool isOpenCreateRoomForm = false;                                           // ルーム作成フォームが開いているか
-    const string roomCreateURL = "http://localhost/room/create";                 // ルーム作成URL
+    const string roomCreateURL = "http://54.168.79.41/room/create";                 // ルーム作成URL
     string createRoom_name = "";                                                 // 作成ルーム名
     string createRoom_password = "";                                             // ログインパスワード
     [Header("ルーム作成関係")]
@@ -31,8 +31,8 @@ public class LobbyManager : MonoBehaviour
     bool updateSelectForm = false;                                                      // 参加選択画面が更新中か
     bool isOpenInputRoomPasswordForm = false;                                           // 参加パスワード入力画面が表示されているか
     bool isEntryRoomInPass = false;                                                     // パスワード入力画面の参加のボタンを押したか
-    const string entryRoomURL = "http://localhost/room/entry";                          // ルーム参加URL
-    const string updateSelectFormURL = "http://localhost/room/select_form_update";      // ルーム選択画面更新URL
+    const string entryRoomURL = "http://54.168.79.41/room/entry";                          // ルーム参加URL
+    const string updateSelectFormURL = "http://54.168.79.41/room/select_form_update";      // ルーム選択画面更新URL
     string inputRoomPasswordFormRoomName = "";                                          // パスワード入力画面の参加しようとしているルーム名表記用
     string inputRoomPassword = "";                                                      // 参加しようとしているルームのパスワード(入力されたもの)
     [Header("ルーム参加関係")]
@@ -50,10 +50,10 @@ public class LobbyManager : MonoBehaviour
     bool isEntryRedy = false;                                                           // 参加者が準備完了か
     bool isReady = false;                                                               // 準備完了ボタンを押したか
     bool leaveRoom = false;                                                             // 退出ボタンを押したか
-    const string readyURL = "http://localhost/room/ready_user_room";                    // 準備完了変更URL
-    const string leaveRoomURL = "http://localhost/room/leave_room";                     // 退出用URL
-    const string updateRoomFormURL = "http://localhost/room/room_form_update";          // ルーム情報更新用URL
-    const string gameStartURL = "http://localhost/room/gamestart_room";                 // ゲーム開始URL
+    const string readyURL = "http://54.168.79.41/room/ready_user_room";                    // 準備完了変更URL
+    const string leaveRoomURL = "http://54.168.79.41/room/leave_room";                     // 退出用URL
+    const string updateRoomFormURL = "http://54.168.79.41/room/room_form_update";          // ルーム情報更新用URL
+    const string gameStartURL = "http://54.168.79.41/room/gamestart_room";                 // ゲーム開始URL
     [Header("ルーム待機関係")]
     [SerializeField] GameObject[] entryUsersUI;                                         // 待機中のユーザー表記
     [SerializeField] GameObject[] userRadyIcon;                                         // 準備完了の表記
