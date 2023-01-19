@@ -15,7 +15,8 @@ public class SelectRoomManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI roomNameText;
     [SerializeField] TextMeshProUGUI roomUserCountText;
 
-    const string entryRoomURL = "http://54.168.79.41/room/entry";
+    const string entryRoomURL = "http://localhost/room/entry";
+    //const string entryRoomURL = "http://54.168.79.41/room/entry";
 
     string roomName;
     string roomPass;

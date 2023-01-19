@@ -45,9 +45,12 @@ public class ReversiManager : MonoBehaviour
     bool sceneMove = false;
     const float returnLobbyCountNum = 10f;
     float returnLobbycountDownValue;
-    const string updateGameURL = "http://54.168.79.41/game/update_game";
-    const string putStoneURL = "http://54.168.79.41/game/putStone_game";
-    const string surrenderURL = "http://54.168.79.41/game/surrender_game";
+    const string updateGameURL = "http://localhost/game/update_game";
+    //const string updateGameURL = "http://54.168.79.41/game/update_game";
+    const string putStoneURL = "http://localhost/game/putStone_game";
+    //const string putStoneURL = "http://54.168.79.41/game/putStone_game";
+    const string surrenderURL = "http://localhost/game/surrender_game";
+    //const string surrenderURL = "http://54.168.79.41/game/surrender_game";
     // 石配置、盤面用
     [SerializeField, Header("ベースステージ")]
     GameObject beaseStage;
@@ -77,7 +80,8 @@ public class ReversiManager : MonoBehaviour
     bool isPutOrPass = false;
 
     // 一時的なURL
-    const string endGameURL= "http://54.168.79.41/game/end_game";
+    const string endGameURL= "http://localhost/game/end_game";
+    //const string endGameURL= "http://54.168.79.41/game/end_game";
 
     LoginManager loginManagerCS;
     RoomDataManager roomDataCS;
@@ -264,7 +268,9 @@ public class ReversiManager : MonoBehaviour
     public void PutStoneOrPass(BaseEventData data)
     {
         var pointerObject = (data as PointerEventData).pointerClick;
-        if (!isPutOrPass && (thisStatusNum == blackTurnNum && roomDataCS.User_host == loginManagerCS.User_name || thisStatusNum == WhiteTrunNum && roomDataCS.User_entry == loginManagerCS.User_name) && ((pointerObject.transform.childCount == 0 && IsPutImpossible()) || pointerObject.name == "PassButton"))
+        var rectpos = GameObject.Find(pointerObject.name).GetComponent<RectTransform>();
+        var world = GetWorldPositionFromRectPosition(rectpos);
+        if (!isPutOrPass && (thisStatusNum == blackTurnNum && roomDataCS.User_host == loginManagerCS.User_name || thisStatusNum == WhiteTrunNum && roomDataCS.User_entry == loginManagerCS.User_name) && ((pointerObject.transform.childCount == 0 && IsPutImpossible(world)) || pointerObject.name == "PassButton"))
         {
             StartCoroutine(PutStonProcess(pointerObject.name));
         }
@@ -379,7 +385,7 @@ public class ReversiManager : MonoBehaviour
     }
 
     // 石の設置が出来るかの判定
-    bool IsPutImpossible()
+    bool IsPutImpossible(Vector2 putCell)
     {
         for (int i = 0; i < DirectionList.Count; i++)
         {
@@ -388,20 +394,20 @@ public class ReversiManager : MonoBehaviour
             //RaycastAllの結果格納用List
             List<RaycastResult> rayResult = new List<RaycastResult>();
             List<GameObject> reverseObj = new List<GameObject>();
-            if (PutImpossible(pointData, rayResult, reverseObj, i, 0))
+            if (PutImpossible(pointData, rayResult, reverseObj, putCell, i, 0))
             {
                 return true;
             }
         }
         return false;
     }
-    bool PutImpossible(PointerEventData point, List<RaycastResult> ray, List<GameObject> reverseObjList, int directionNum, int count)
+    bool PutImpossible(PointerEventData point, List<RaycastResult> ray, List<GameObject> reverseObjList, Vector3 inputPos, int directionNum, int count)
     {
         var keepRay = ray;
         var keepObj = reverseObjList;
         var errorNum = 0;
         Vector3 addPoint = transform.TransformPoint(new Vector3(DirectionList[directionNum].x, DirectionList[directionNum].y, 0));
-        point.position = Input.mousePosition + addPoint + (addPoint * count);
+        point.position = transform.TransformPoint(inputPos) + addPoint + (addPoint * count);
         EventSystem.current.RaycastAll(point, keepRay);
         foreach (RaycastResult result in keepRay)
         {
@@ -421,7 +427,7 @@ public class ReversiManager : MonoBehaviour
                 {
                     count++;
                     keepObj.Add(targetObj);
-                    if (PutImpossible(point, keepRay, keepObj, directionNum, count))
+                    if (PutImpossible(point, keepRay, keepObj, inputPos, directionNum, count))
                     {
                         errorNum = 1;
                     }
@@ -435,7 +441,7 @@ public class ReversiManager : MonoBehaviour
                 {
                     count++;
                     keepObj.Add(targetObj);
-                    if (PutImpossible(point, keepRay, keepObj, directionNum, count))
+                    if (PutImpossible(point, keepRay, keepObj, inputPos, directionNum, count))
                     {
                         errorNum = 1;
                     }

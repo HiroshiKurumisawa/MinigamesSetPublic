@@ -14,8 +14,8 @@ public class TitleManager : MonoBehaviour
 
     // アカウントログイン
     bool isAccountLogin = false;                                            // アカウントログインフラグ
-    //const string accountLoginURL = "http://localhost/user/account/login";   // アカウントログインURL
-    const string accountLoginURL = "http://54.168.79.41/user/account/login";   // アカウントログインURL
+    const string accountLoginURL = "http://localhost/user/account/login";   // アカウントログインURL
+    //const string accountLoginURL = "http://54.168.79.41/user/account/login";   // アカウントログインURL
     string loginUser_name = "";                                             // ログインユーザー名
     string loginUser_password = "";                                         // ログインパスワード
     [Header("ユーザーログイン関係")]
@@ -25,15 +25,15 @@ public class TitleManager : MonoBehaviour
 
     // ゲストログイン
     bool isGuestLogin = false;                                              // ゲストログインフラグ
-    //const string guestLoginURL = "http://localhost/user/guest/login";       // ゲストログインURL
-    const string guestLoginURL = "http://54.168.79.41/user/guest/login";       // ゲストログインURL
+    const string guestLoginURL = "http://localhost/user/guest/login";       // ゲストログインURL
+    //const string guestLoginURL = "http://54.168.79.41/user/guest/login";       // ゲストログインURL
 
     // ユーザー作成
     bool openCreateForm = false;                                            // ユーザー作成フォームが開いているか
     bool isCreateAccont = false;                                            // 作成ボタンを押したかどうか
     public bool IsCreateAccount { get { return isCreateAccont; } }
-    //const string createAccountURL = "http://localhost/user/account/create"; // アカウント作成URL
-    const string createAccountURL = "http://54.168.79.41/user/account/create"; // アカウント作成URL
+    const string createAccountURL = "http://localhost/user/account/create"; // アカウント作成URL
+    //const string createAccountURL = "http://54.168.79.41/user/account/create"; // アカウント作成URL
     string createUser_name = "";                                            // アカウント作成ユーザ名
     string createUser_password = "";                                        // アカウント作成パスワード
     string createUser_rePassword = "";                                      // アカウント作成パスワード再入力
