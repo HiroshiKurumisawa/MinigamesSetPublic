@@ -1990,14 +1990,14 @@ MonoBehaviour:
   tileCreatePoint: {fileID: 1673094107}
   tilePrefab: {fileID: 8362442695806690026, guid: 56dc32277f2f4c041b3d8eb2a11e720d, type: 3}
   DirectionList:
-  - {x: -100, y: 100}
-  - {x: 0, y: 100}
-  - {x: 100, y: 100}
-  - {x: -100, y: 0}
-  - {x: 100, y: 0}
-  - {x: -100, y: -100}
-  - {x: 0, y: -100}
-  - {x: 10, y: -100}
+  - {x: -95, y: 95}
+  - {x: 0, y: 95}
+  - {x: 95, y: 95}
+  - {x: -95, y: 0}
+  - {x: 95, y: 0}
+  - {x: -95, y: -95}
+  - {x: 0, y: -95}
+  - {x: 95, y: -95}
   stonePrefab: {fileID: 4655972079577288880, guid: 8ebdced51b9d2414a90f5480070bb27f, type: 3}
   BlackSpeachBalloonUI: {fileID: 1573640801}
   whiteSpeachBalloon: {fileID: 1361808672}

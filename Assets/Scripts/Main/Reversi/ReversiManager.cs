@@ -35,7 +35,9 @@ public class ReversiManager : MonoBehaviour
     const int WhiteTrunNum = 1;
     const int blackWinNum = 2;
     const int whiteWinNum = 3;
-    const int drowNum = 4;
+    const int blackSurrenderNum = 4;
+    const int whiteSurrenderNum = 5;
+    const int drowNum = 6;
     int thisStatusNum;
     int allstonesNum = 0;
     bool isGameEnd = false;
@@ -80,7 +82,7 @@ public class ReversiManager : MonoBehaviour
     bool isPutOrPass = false;
 
     // àÍéûìIÇ»URL
-    const string endGameURL= "http://localhost/game/end_game";
+    const string endGameURL = "http://localhost/game/end_game";
     //const string endGameURL= "http://54.168.79.41/game/end_game";
 
     LoginManager loginManagerCS;
@@ -105,27 +107,26 @@ public class ReversiManager : MonoBehaviour
 
     void EndGame()
     {
-        if (thisStatusNum == whiteWinNum)
+        switch(thisStatusNum)
         {
-            if(allstonesNum<=64)
-            {
+            case blackWinNum:
+                ReturnLobby(returnLobbyCountNum, roomDataCS.User_host + "(çï)ÇÃèüóò");
+                break;
+            case whiteWinNum:
+                ReturnLobby(returnLobbyCountNum, roomDataCS.User_entry + "(îí)ÇÃèüóò");
+                break;
+            case blackSurrenderNum:
                 surrender = true;
-            }
-            ReturnLobby(returnLobbyCountNum, roomDataCS.User_entry + "(îí)ÇÃèüóò");
-        }
-        else if (thisStatusNum == blackWinNum)
-        {
-            if (allstonesNum <= 64)
-            {
+                ReturnLobby(returnLobbyCountNum, roomDataCS.User_entry + "(îí)ÇÃèüóò");
+                break;
+            case whiteSurrenderNum:
                 surrender = true;
-            }
-            ReturnLobby(returnLobbyCountNum, roomDataCS.User_host + "(çï)ÇÃèüóò");
+                ReturnLobby(returnLobbyCountNum, roomDataCS.User_host + "(çï)ÇÃèüóò");
+                break;
+            case drowNum:
+                ReturnLobby(returnLobbyCountNum, "à¯Ç´ï™ÇØ");
+                break;
         }
-        else if (thisStatusNum == drowNum)
-        {
-            ReturnLobby(returnLobbyCountNum, "à¯Ç´ï™ÇØ");
-        }
-        else { return; }
     }
 
 
@@ -171,7 +172,7 @@ public class ReversiManager : MonoBehaviour
             }
         }
 
-        if (returnLobbycountDownValue <= 0&& !sceneMove)
+        if (returnLobbycountDownValue <= 0 && !sceneMove)
         {
             sceneMove = true;
             StartCoroutine(EndGameProcess());
@@ -270,7 +271,7 @@ public class ReversiManager : MonoBehaviour
         var pointerObject = (data as PointerEventData).pointerClick;
         var rectpos = GameObject.Find(pointerObject.name).GetComponent<RectTransform>();
         var world = GetWorldPositionFromRectPosition(rectpos);
-        if (!isPutOrPass && (thisStatusNum == blackTurnNum && roomDataCS.User_host == loginManagerCS.User_name || thisStatusNum == WhiteTrunNum && roomDataCS.User_entry == loginManagerCS.User_name) && ((pointerObject.transform.childCount == 0 && IsPutImpossible(world)) || pointerObject.name == "PassButton"))
+        if (!isPutOrPass && ((thisStatusNum == blackTurnNum && roomDataCS.User_host == loginManagerCS.User_name) || (thisStatusNum == WhiteTrunNum && roomDataCS.User_entry == loginManagerCS.User_name)) && ((pointerObject.transform.childCount == 0 && IsPutImpossible(world)) || pointerObject.name == "PassButton"))
         {
             StartCoroutine(PutStonProcess(pointerObject.name));
         }
@@ -329,11 +330,11 @@ public class ReversiManager : MonoBehaviour
                 if (status == blackTurnNum || status == WhiteTrunNum)
                 {
                     var selectObj = GameObject.Find(resData.gameData.set_point);
-                    if (selectObj != null && selectObj.transform.childCount == 0)
+                    if (selectObj != null && ((selectObj.transform.childCount == 0) || selectObj.name == "PassButton"))
                     {
                         isPutOrPass = true;
                         thisStatusNum = status;
-                        StonePut(resData.gameData.set_point, thisStatusNum);
+                        StonePut(selectObj.name, thisStatusNum);
                     }
                     else if (selectObj != null && selectObj.transform.childCount != 0)
                     {
@@ -369,12 +370,14 @@ public class ReversiManager : MonoBehaviour
             }
 
             var rectpos = GameObject.Find(point).GetComponent<RectTransform>();
-            var world = GetWorldPositionFromRectPosition(rectpos);
+            var putWorldPos = GetWorldPositionFromRectPosition(rectpos);
 
-            ReverseStoneProcess(world);
+            ReverseStoneProcess(putWorldPos);
         }
-        else { return; }
-
+        else
+        {
+            StartCoroutine(PutStonProcess(""));
+        }
     }
 
     private Vector3 GetWorldPositionFromRectPosition(RectTransform rect)
@@ -569,11 +572,11 @@ public class ReversiManager : MonoBehaviour
             surrenderFormUI.SetActive(false);
             if (roomDataCS.User_host == loginManagerCS.User_name) // çïÇ™ç~éQÇµÇΩÇ∆Ç´
             {
-                StartCoroutine(SurrenderProcess(whiteWinNum));
+                StartCoroutine(SurrenderProcess(blackSurrenderNum));
             }
             else if (roomDataCS.User_entry == loginManagerCS.User_name) // îíÇ™ç~éQÇµÇΩÇ∆Ç´
             {
-                StartCoroutine(SurrenderProcess(blackWinNum));
+                StartCoroutine(SurrenderProcess(whiteSurrenderNum));
             }
         }
     }
