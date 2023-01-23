@@ -22,7 +22,7 @@ public class TitleManager : MonoBehaviour
     [SerializeField] GameObject massage_LoginText;                          // メッセージテキスト(ログイン)
     [SerializeField] TMP_InputField user_nameField_Login;                   // ユーザーネーム入力フィールド(ログイン)
     [SerializeField] TMP_InputField passwordField_Login;                    // パスワード入力フィールド(ログイン)
-
+    int loginInputSelected = 0;
     // ゲストログイン
     bool isGuestLogin = false;                                              // ゲストログインフラグ
     const string guestLoginURL = "http://localhost/user/guest/login";       // ゲストログインURL
@@ -43,6 +43,7 @@ public class TitleManager : MonoBehaviour
     [SerializeField] TMP_InputField user_nameField;                         // ユーザーネーム入力フィールド
     [SerializeField] TMP_InputField passwordField;                          // パスワード入力フィールド
     [SerializeField] TMP_InputField rePasswordField;                        // パスワード再入力フィールド
+    int createInputSelected = 0;
 
     [Header("ゲーム終了関係")]
     [SerializeField] GameObject quitGameForm;
@@ -61,15 +62,45 @@ public class TitleManager : MonoBehaviour
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
     }
 
+    private void Update()
+    {
+        InputSelectLogin();
+        InputSelectCreateUser();
+    }
+
     #region アカウントログイン関係
+    // ユーザー名input
     public void InputUserNameLogin()
     {
         loginUser_name = user_nameField_Login.text;
     }
+    // ユーザー名select
+    public void SelectUserNameLogin() => loginInputSelected = 0;
     // パスワードinput
     public void InputPasswordLogin()
     {
         loginUser_password = passwordField_Login.text;
+    }
+    // パスワードselect
+    public void SelectPasswordLogin() => loginInputSelected = 1;
+    // Tabで切り替え
+    private void InputSelectLogin()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            loginInputSelected++;
+            if (loginInputSelected > 1) { loginInputSelected = 0; }
+
+            switch (loginInputSelected)
+            {
+                case 0:
+                    user_nameField_Login.Select();
+                    break;
+                case 1:
+                    passwordField_Login.Select();
+                    break;
+            }
+        }
     }
     // ログインボタンが押されたとき(AccountLogin用UIのEventTriggerのPointerClickに使う)
     public void AccountLogin()
@@ -167,22 +198,52 @@ public class TitleManager : MonoBehaviour
     {
         createUser_name = user_nameField.text;
     }
+    // ユーザー名select
+    public void SelectUserName() => createInputSelected = 0;
     // パスワードinput
     public void InputPassword()
     {
         createUser_password = passwordField.text;
     }
+    // パスワードselect
+    public void SelectPassword() => createInputSelected = 1;
     // 再入力パスワードinput
     public void InputRePassword()
     {
         createUser_rePassword = rePasswordField.text;
     }
+    // 再入力パスワードselect
+    public void SelectRePassword() => createInputSelected = 2;
+    // Tabで切り替え
+    private void InputSelectCreateUser()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            createInputSelected++;
+            if (createInputSelected > 2) { createInputSelected = 0; }
+
+            switch (createInputSelected)
+            {
+                case 0:
+                    user_nameField.Select();
+                    break;
+                case 1:
+                    passwordField.Select();
+                    break;
+                case 2:
+                    rePasswordField.Select();
+                    break;
+            }
+        }
+    }
+
     // 新規作成ボタンを押したとき
     public void OpenCreateFormUI()
     {
         if (!openCreateForm)
         {
             openCreateForm = true;
+            createInputSelected = 0;
             createFormUI.SetActive(true);
         }
     }
@@ -202,6 +263,7 @@ public class TitleManager : MonoBehaviour
         if (!isCreateAccont)
         {
             isCreateAccont = true;
+            createInputSelected = 0;
             StartCoroutine(CreateAccountProcess());
         }
     }

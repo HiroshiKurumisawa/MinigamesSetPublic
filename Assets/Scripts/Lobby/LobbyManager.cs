@@ -27,6 +27,7 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] GameObject massage_CreateRoomText;                          // メッセージテキスト(ルーム作成)
     [SerializeField] TMP_InputField room_nameField_CreateRoom;                   // ルーム名入力フィールド(ルーム作成)
     [SerializeField] TMP_InputField passwordField_CreateRoom;                    // パスワード入力フィールド(ルーム作成)
+    int createRoomInputSelected = 0;
     // ルーム参加関係
     bool isOpenSelectRoomForm = false;                                                  // 参加用のフォームが開いているか
     bool updateSelectForm = false;                                                      // 参加選択画面が更新中か
@@ -89,7 +90,7 @@ public class LobbyManager : MonoBehaviour
 
     void Update()
     {
-
+        InputSelectCreateRoom();
     }
 
     private void FixedUpdate()
@@ -110,10 +111,33 @@ public class LobbyManager : MonoBehaviour
     {
         createRoom_name = room_nameField_CreateRoom.text;
     }
-    // パスワードinput
+    // ルーム名select
+    public void SelectRoomNameCreateRoom() => createRoomInputSelected = 0;
+    // ルームパスワードinput
     public void InputPasswordCreateRoom()
     {
         createRoom_password = passwordField_CreateRoom.text;
+    }
+    // ルームパスワードselect
+    public void SelecttPasswordCreateRoom() => createRoomInputSelected = 1;
+    // Tabで切り替え
+    private void InputSelectCreateRoom()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            createRoomInputSelected++;
+            if (createRoomInputSelected > 1) { createRoomInputSelected = 0; }
+
+            switch (createRoomInputSelected)
+            {
+                case 0:
+                    room_nameField_CreateRoom.Select();
+                    break;
+                case 1:
+                    passwordField_CreateRoom.Select();
+                    break;
+            }
+        }
     }
     // ルーム作成フォーム表示
     public void OpenCreateRoomForm()
