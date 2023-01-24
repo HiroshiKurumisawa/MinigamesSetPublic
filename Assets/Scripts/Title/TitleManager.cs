@@ -295,6 +295,8 @@ public class TitleManager : MonoBehaviour
                 rePasswordField.text = "";
                 massageText.GetComponent<TextMeshProUGUI>().color = new Color(0, 0, 255);
                 massageText.GetComponent<TextMeshProUGUI>().text = "ì¬¬Œ÷";
+                yield return new WaitForSeconds(0.8f);
+                CloseCrateFormUI();
             }
             else if (resData.requestMessage == 1)
             {
