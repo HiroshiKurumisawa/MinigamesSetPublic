@@ -112,14 +112,14 @@ public class LobbyManager : MonoBehaviour
         createRoom_name = room_nameField_CreateRoom.text;
     }
     // ルーム名select
-    public void SelectRoomNameCreateRoom() => createRoomInputSelected = 0;
+    public void SelectRoomNameCreateRoom() => createRoomInputSelected = 1;
     // ルームパスワードinput
     public void InputPasswordCreateRoom()
     {
         createRoom_password = passwordField_CreateRoom.text;
     }
     // ルームパスワードselect
-    public void SelecttPasswordCreateRoom() => createRoomInputSelected = 1;
+    public void SelecttPasswordCreateRoom() => createRoomInputSelected = 0;
     // Tabで切り替え
     private void InputSelectCreateRoom()
     {
@@ -131,10 +131,10 @@ public class LobbyManager : MonoBehaviour
             switch (createRoomInputSelected)
             {
                 case 0:
-                    room_nameField_CreateRoom.Select();
+                    passwordField_CreateRoom.Select();
                     break;
                 case 1:
-                    passwordField_CreateRoom.Select();
+                    room_nameField_CreateRoom.Select();
                     break;
             }
         }

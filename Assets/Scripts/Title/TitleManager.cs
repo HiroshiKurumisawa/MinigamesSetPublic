@@ -75,14 +75,14 @@ public class TitleManager : MonoBehaviour
         loginUser_name = user_nameField_Login.text;
     }
     // ユーザー名select
-    public void SelectUserNameLogin() => loginInputSelected = 0;
+    public void SelectUserNameLogin() => loginInputSelected = 1;
     // パスワードinput
     public void InputPasswordLogin()
     {
         loginUser_password = passwordField_Login.text;
     }
     // パスワードselect
-    public void SelectPasswordLogin() => loginInputSelected = 1;
+    public void SelectPasswordLogin() => loginInputSelected = 0;
     // Tabで切り替え
     private void InputSelectLogin()
     {
@@ -94,10 +94,10 @@ public class TitleManager : MonoBehaviour
             switch (loginInputSelected)
             {
                 case 0:
-                    user_nameField_Login.Select();
+                    passwordField_Login.Select();
                     break;
                 case 1:
-                    passwordField_Login.Select();
+                    user_nameField_Login.Select();
                     break;
             }
         }
@@ -199,21 +199,21 @@ public class TitleManager : MonoBehaviour
         createUser_name = user_nameField.text;
     }
     // ユーザー名select
-    public void SelectUserName() => createInputSelected = 0;
+    public void SelectUserName() => createInputSelected = 1;
     // パスワードinput
     public void InputPassword()
     {
         createUser_password = passwordField.text;
     }
     // パスワードselect
-    public void SelectPassword() => createInputSelected = 1;
+    public void SelectPassword() => createInputSelected = 2;
     // 再入力パスワードinput
     public void InputRePassword()
     {
         createUser_rePassword = rePasswordField.text;
     }
     // 再入力パスワードselect
-    public void SelectRePassword() => createInputSelected = 2;
+    public void SelectRePassword() => createInputSelected = 0;
     // Tabで切り替え
     private void InputSelectCreateUser()
     {
@@ -225,13 +225,13 @@ public class TitleManager : MonoBehaviour
             switch (createInputSelected)
             {
                 case 0:
-                    user_nameField.Select();
+                    rePasswordField.Select();
                     break;
                 case 1:
-                    passwordField.Select();
+                    user_nameField.Select();
                     break;
                 case 2:
-                    rePasswordField.Select();
+                    passwordField.Select();
                     break;
             }
         }
