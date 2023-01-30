@@ -140,10 +140,22 @@ public class TitleManager : MonoBehaviour
                     massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(入力内容に誤りがあります)";
                     isAccountLogin = false;
                 }
-                else if (resData.requestMessage == 2)   // すでにログインされている状態
+                else if (resData.requestMessage == 2)   // パスワードが違う場合状態
+                {
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(パスワードに誤りがあります)";
+                    isAccountLogin = false;
+                }
+                else if (resData.requestMessage == 3)   // すでにログインされている状態
                 {
                     massage_LoginText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
                     massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(既にログインしています)";
+                    isAccountLogin = false;
+                }
+                else if (resData.requestMessage == 4)   // アカウントがない場合
+                {
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(入力されたアカウントが存在しません)";
                     isAccountLogin = false;
                 }
                 else                                    // ログインできるとき
