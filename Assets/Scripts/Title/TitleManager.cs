@@ -288,7 +288,7 @@ public class TitleManager : MonoBehaviour
         {
             AccountCreateRoot resData = JsonUtility.FromJson<AccountCreateRoot>(request.downloadHandler.text);
 
-            if (resData.requestMessage == 0)
+            if (resData.requestMessage == 0)    // 成功
             {
                 user_nameField.text = "";
                 passwordField.text = "";
@@ -298,10 +298,30 @@ public class TitleManager : MonoBehaviour
                 yield return new WaitForSeconds(0.8f);
                 CloseCrateFormUI();
             }
-            else if (resData.requestMessage == 1)
+            else if (resData.requestMessage == 1)   // ユーザーが既に登録されている
             {
                 massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
-                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗(入力内容が不適切です)";
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(ユーザー名が入力されていません)";
+            }
+            else if (resData.requestMessage == 2)   // ユーザー名に禁止ワードが入っている
+            {
+                massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(同じユーザー名が既に登録されています)";
+            }
+            else if (resData.requestMessage == 3)   // ユーザー名が入力されていない
+            {
+                massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(ユーザー名に\"ゲスト\"が含まれています)";
+            }
+            else if (resData.requestMessage == 4)   // パスワードに不備がある
+            {
+                massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(パスワードが正しく入力されていません)";
+            }
+            else if (resData.requestMessage == 5)
+            {
+                massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(ユーザー名とパスワード両方に不備があります)";
             }
         }
         isCreateAccont = false;
