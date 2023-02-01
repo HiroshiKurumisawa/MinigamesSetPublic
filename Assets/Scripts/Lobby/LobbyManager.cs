@@ -33,6 +33,9 @@ public class LobbyManager : MonoBehaviour
     bool updateSelectForm = false;                                                      // 参加選択画面が更新中か
     bool isOpenInputRoomPasswordForm = false;                                           // 参加パスワード入力画面が表示されているか
     bool isEntryRoomInPass = false;                                                     // パスワード入力画面の参加のボタンを押したか
+    bool isUpdateSelectFormWait = false;
+    float waitTimeValue;                                                                // 更新時間の値
+    const float waitTime = 10f;                                                         // 更新時間
     const string entryRoomURL = "http://localhost/room/entry";                          // ルーム参加URL
     //const string entryRoomURL = "http://54.168.79.41/room/entry";                          // ルーム参加URL
     const string updateSelectFormURL = "http://localhost/room/select_form_update";      // ルーム選択画面更新URL
@@ -46,6 +49,8 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] GameObject inputRoomPasswordForm;                                  // 参加ルームのパスワード入力画面
     [SerializeField] GameObject inputRoomPasswordRoomNameText;                          // パスワード入力画面のルーム名
     [SerializeField] GameObject inputRoomPasswordMessageText;                           // パスワード入力画面のメッセージテキスト
+    [SerializeField] GameObject waitTimeMessage;                                        // 最更新可能までのメッセージテキスト
+    [SerializeField] GameObject updateRoomButton;                                       // ルーム更新ボタン
     [SerializeField] TMP_InputField passwordField_EntryRoom;                            // パスワード入力フィールド(ルーム参加)
     // ルーム待機関係
     bool updateRoomForm = false;                                                        // ルーム情報更新フラグ
@@ -80,6 +85,7 @@ public class LobbyManager : MonoBehaviour
         message_RoomText.GetComponent<TextMeshProUGUI>().text = "";
         entryUsersUI[0].GetComponent<TextMeshProUGUI>().text = "";
         entryUsersUI[1].GetComponent<TextMeshProUGUI>().text = "";
+        waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
         roomForm.SetActive(false);
         createRoomForm.SetActive(false);
         roomsSelectForm.SetActive(false);
@@ -96,6 +102,7 @@ public class LobbyManager : MonoBehaviour
     private void FixedUpdate()
     {
         RoomKeepUpdate();
+        UpdateRoomSelectFormWaitTime(waitTime);
     }
 
     // ユーザーネーム表示
@@ -224,6 +231,10 @@ public class LobbyManager : MonoBehaviour
         if (isOpenSelectRoomForm)
         {
             isOpenSelectRoomForm = false;
+            updateSelectForm = false;
+            isUpdateSelectFormWait = false;
+            updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
+            waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
             roomsSelectForm.SetActive(false);
         }
     }
@@ -338,9 +349,51 @@ public class LobbyManager : MonoBehaviour
                 SelectRoomManager selectRoomManagerCS = roomUIclone.GetComponent<SelectRoomManager>();
                 selectRoomManagerCS.SetRoomData(resData.allRoomList[i].room_name, resData.allRoomList[i].room_password, resData.allRoomList[i].in_room_users, resData.allRoomList[i].max_room_users);
             }
-            updateSelectForm = false;
         }
 
+    }
+    void UpdateRoomSelectFormWaitTime(float time)
+    {
+        if (!updateSelectForm) { return; }
+        else
+        {
+            updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 0.2f);
+            if (!isUpdateSelectFormWait)
+            {
+                isUpdateSelectFormWait = true;
+                waitTimeValue = time;
+            }
+
+            if (waitTimeValue <= 0)
+            {
+                updateSelectForm = false;
+                isUpdateSelectFormWait = false;
+                waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
+                updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
+            }
+            else
+            {
+                waitTimeValue -= Time.deltaTime;
+                waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "再更新可能まで\n" + waitTimeValue.ToString("00");
+            }
+        }
+    }
+    // ポインター処理
+    public void UpdateRoomButtonPointerEnter()
+    {
+        if (!updateSelectForm)
+        {
+            updateRoomButton.GetComponent<Image>().color = new Color(1f, 0.5f, 0f, 1f);
+        }
+        else { return; }
+    }
+    public void UpdateRoomButtonPointerExit()
+    {
+        if (!updateSelectForm)
+        {
+            updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
+        }
+        else { return; }
     }
     #endregion
     #region ルーム関係
