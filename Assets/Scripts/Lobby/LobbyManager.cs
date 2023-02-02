@@ -221,6 +221,7 @@ public class LobbyManager : MonoBehaviour
         if (!isOpenSelectRoomForm)
         {
             isOpenSelectRoomForm = true;
+            UpdateRoomSelectFormWaitTimeReset();
             roomsSelectForm.SetActive(true);
             StartCoroutine(UpdateRoomSelectFormProcess());
         }
@@ -254,7 +255,10 @@ public class LobbyManager : MonoBehaviour
         if (isOpenInputRoomPasswordForm)
         {
             isOpenInputRoomPasswordForm = false;
+            passwordField_EntryRoom.text = "";
+            inputRoomPasswordMessageText.GetComponent<TextMeshProUGUI>().text = "";
             inputRoomPasswordForm.SetActive(false);
+            UpdateRoomSelectFormWaitTimeReset();
         }
     }
     // パスワードinput
@@ -296,6 +300,9 @@ public class LobbyManager : MonoBehaviour
                 passwordField_EntryRoom.text = "";
                 roomsSelectForm.SetActive(false);
                 OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status);
+                isOpenInputRoomPasswordForm = false;
+                inputRoomPasswordMessageText.GetComponent<TextMeshProUGUI>().text = "";
+                inputRoomPasswordForm.SetActive(false);
             }
             else if (resData.requestMessage == 2)                   // エラー2が返ってきたとき
             {
@@ -305,6 +312,8 @@ public class LobbyManager : MonoBehaviour
             {
                 print("error");
             }
+
+            isEntryRoomInPass = isEntryRoomInPass == true ? false : true;
         }
     }
 
@@ -366,10 +375,7 @@ public class LobbyManager : MonoBehaviour
 
             if (waitTimeValue <= 0)
             {
-                updateSelectForm = false;
-                isUpdateSelectFormWait = false;
-                waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
-                updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
+                UpdateRoomSelectFormWaitTimeReset();
             }
             else
             {
@@ -377,6 +383,13 @@ public class LobbyManager : MonoBehaviour
                 waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "再更新可能まで\n" + waitTimeValue.ToString("00");
             }
         }
+    }
+    void UpdateRoomSelectFormWaitTimeReset() // ルーム検索更新待機状態をリセットする
+    {
+        updateSelectForm = false;
+        isUpdateSelectFormWait = false;
+        waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
+        updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
     }
     // ポインター処理
     public void UpdateRoomButtonPointerEnter()
@@ -547,6 +560,7 @@ public class LobbyManager : MonoBehaviour
                 OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status);
                 roomDataManagerCS.SetRoomData(resData.roomData.room_name, resData.roomData.user_host, resData.roomData.user_entry);
             }
+            yield return new WaitForSeconds(0.3f);
             updateRoomForm = false;
         }
     }
