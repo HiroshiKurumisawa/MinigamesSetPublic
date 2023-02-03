@@ -1407,6 +1407,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 467786452}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -1762,6 +1774,18 @@ MonoBehaviour:
         - m_Target: {fileID: 1582734047}
           m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
           m_MethodName: CloseQuitGameForm
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 486729016}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: CancelButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -2505,6 +2529,18 @@ MonoBehaviour:
         - m_Target: {fileID: 1582734047}
           m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
           m_MethodName: CreateAccountButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 739528761}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -3674,6 +3710,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 1298794016}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -4296,6 +4344,18 @@ MonoBehaviour:
         - m_Target: {fileID: 1582734047}
           m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
           m_MethodName: OpenQuitGameForm
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1488327187}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -5721,6 +5781,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 1930147289}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: CancelButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -6671,6 +6743,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2099670175}
   m_CullTransparentMesh: 1
+--- !u!1001 &3693648976744243621
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1045049511156254309, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_Name
+      value: SoundManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9e53ae100009666449949739055b761b, type: 3}
 --- !u!222 &4459896307238434048
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6699,6 +6828,18 @@ MonoBehaviour:
         - m_Target: {fileID: 1582734047}
           m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
           m_MethodName: AccountLogin
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 4459896307238434110}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7049,6 +7190,18 @@ MonoBehaviour:
         - m_Target: {fileID: 1582734047}
           m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
           m_MethodName: QuitGame
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 7712119135545919260}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

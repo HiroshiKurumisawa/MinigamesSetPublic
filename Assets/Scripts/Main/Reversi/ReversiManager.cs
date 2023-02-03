@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using TMPro;
+using SoundSystem;
 using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class ReversiManager : MonoBehaviour

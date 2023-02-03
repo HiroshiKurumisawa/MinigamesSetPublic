@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using TMPro;
+using SoundSystem;
 using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class LobbyManager : MonoBehaviour
@@ -323,6 +324,7 @@ public class LobbyManager : MonoBehaviour
         if (!updateSelectForm)
         {
             updateSelectForm = true;
+            SoundManager.Instance.PlayOneShotSe("ui_click");
             StartCoroutine(UpdateRoomSelectFormProcess());
         }
     }
@@ -396,6 +398,7 @@ public class LobbyManager : MonoBehaviour
     {
         if (!updateSelectForm)
         {
+            SoundManager.Instance.PlayOneShotSe("ui_enter");
             updateRoomButton.GetComponent<Image>().color = new Color(1f, 0.5f, 0f, 1f);
         }
         else { return; }

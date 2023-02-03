@@ -1015,6 +1015,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 156261671}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -1121,6 +1133,63 @@ Transform:
   m_Father: {fileID: 1243733672}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &240751917
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1045049511156254309, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_Name
+      value: SoundManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.688792
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.808842
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 74.766464
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2132932272759462255, guid: 9e53ae100009666449949739055b761b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9e53ae100009666449949739055b761b, type: 3}
 --- !u!1 &283410050
 GameObject:
   m_ObjectHideFlags: 0
@@ -2039,6 +2108,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 520368099}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -2460,6 +2541,18 @@ MonoBehaviour:
         - m_Target: {fileID: 343614465}
           m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
           m_MethodName: CloseSelectRoomForm
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 724925813}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: CancelButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -4255,18 +4348,6 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: TitleManager, Assembly-CSharp
-          m_MethodName: CloseCrateFormUI
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -5873,6 +5954,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 607138810383862308}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -6638,6 +6731,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 607138811911565252}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: CancelButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -7165,6 +7270,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 1187740023653230019}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -7451,6 +7568,18 @@ MonoBehaviour:
         - m_Target: {fileID: 283410051}
           m_TargetAssemblyTypeName: LogOutManager, Assembly-CSharp
           m_MethodName: OpenLogOutForm
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 2229385498941256914}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7895,6 +8024,18 @@ MonoBehaviour:
         - m_Target: {fileID: 283410051}
           m_TargetAssemblyTypeName: LogOutManager, Assembly-CSharp
           m_MethodName: CloseLogOutForm
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 2612589513959981946}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: CancelButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -8573,6 +8714,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 2612589515451213466}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -8903,6 +9056,18 @@ MonoBehaviour:
         - m_Target: {fileID: 343614465}
           m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
           m_MethodName: OpenCreateRoomForm
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 4348767569160738184}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -10395,6 +10560,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 8467804794966848795}
+          m_TargetAssemblyTypeName: UnityEngine.MonoBehaviour, UnityEngine
+          m_MethodName: CancelInvoke
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -11272,6 +11449,18 @@ MonoBehaviour:
         - m_Target: {fileID: 343614465}
           m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
           m_MethodName: CreateRoom
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 8467804795519291643}
+          m_TargetAssemblyTypeName: Pointer, Assembly-CSharp
+          m_MethodName: DecisionButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

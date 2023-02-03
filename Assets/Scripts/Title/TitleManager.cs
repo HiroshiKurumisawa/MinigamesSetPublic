@@ -108,9 +108,7 @@ public class TitleManager : MonoBehaviour
         if (!isAccountLogin)
         {
             isAccountLogin = true;
-            {
-                StartCoroutine(AccountLoginProcess());
-            }
+            StartCoroutine(AccountLoginProcess());
         }
     }
     IEnumerator AccountLoginProcess()
