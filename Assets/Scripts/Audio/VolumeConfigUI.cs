@@ -10,20 +10,21 @@ public class VolumeConfigUI : MonoBehaviour
     [SerializeField] Slider bgmSlider;
     [SerializeField] Slider seSlider;
 
-    private void AudioVolumeChange(int soundMenuNum, float volume)      // 音量の変更
+    private void Start()
     {
-        switch (soundMenuNum)
-        {
-            case 0:
-                masterSlider.value += volume;
-                break;
-            case 1:
-                bgmSlider.value += volume;
-                break;
-            case 2:
-                seSlider.value += volume;
-                break;
-        }
+        OpenOptionPanel();
+    }
+
+    private void OpenOptionPanel()
+    {
+        // ボリュームの設定
+        SetMasterSliderEvent(vol => SoundManager.Instance.MasterVolume = vol);
+        SetBGMSliderEvent(vol => SoundManager.Instance.BGMVolume = vol);
+        SetSeSliderEvent(vol => SoundManager.Instance.SEVolume = vol);
+        // スライダーの数値反映
+        SetMasterVolume(SoundManager.Instance.MasterVolume);
+        SetBGMVolume(SoundManager.Instance.BGMVolume);
+        SetSeVolume(SoundManager.Instance.SEVolume);
     }
 
     // スライダーの位置をボリュームに合わせてセット
@@ -33,12 +34,12 @@ public class VolumeConfigUI : MonoBehaviour
     }
     public void SetBGMVolume(float bgmVolume)
     {
-        masterSlider.value = bgmVolume;
+        bgmSlider.value = bgmVolume;
 
     }
     public void SetSeVolume(float seVolume)
     {
-        masterSlider.value = seVolume;
+        seSlider.value = seVolume;
 
     }
 

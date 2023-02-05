@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;
+using SoundSystem;
 using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class TitleManager : MonoBehaviour
@@ -60,6 +61,7 @@ public class TitleManager : MonoBehaviour
     void Start()
     {
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
+        SoundManager.Instance.PlayBGMWithFadeIn("Title_Lobby", 1f);
     }
 
     private void Update()
