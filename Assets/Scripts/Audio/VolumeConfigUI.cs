@@ -2,30 +2,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using TMPro;
-using SoundSystem;
 
 public class VolumeConfigUI : MonoBehaviour
 {
     [SerializeField] Slider masterSlider;
+    public float MasterSilider { get { return masterSlider.value; } private set { masterSlider.value = value; } }
     [SerializeField] Slider bgmSlider;
+    public float BgmSlider { get { return bgmSlider.value; } private set { bgmSlider.value = value; } }
     [SerializeField] Slider seSlider;
-
-    private void Start()
-    {
-        OpenOptionPanel();
-    }
-
-    private void OpenOptionPanel()
-    {
-        // ボリュームの設定
-        SetMasterSliderEvent(vol => SoundManager.Instance.MasterVolume = vol);
-        SetBGMSliderEvent(vol => SoundManager.Instance.BGMVolume = vol);
-        SetSeSliderEvent(vol => SoundManager.Instance.SEVolume = vol);
-        // スライダーの数値反映
-        SetMasterVolume(SoundManager.Instance.MasterVolume);
-        SetBGMVolume(SoundManager.Instance.BGMVolume);
-        SetSeVolume(SoundManager.Instance.SEVolume);
-    }
+    public float SeSlider { get { return seSlider.value; } private set { seSlider.value = value; } }
 
     // スライダーの位置をボリュームに合わせてセット
     public void SetMasterVolume(float masterVolume)
@@ -40,7 +25,13 @@ public class VolumeConfigUI : MonoBehaviour
     public void SetSeVolume(float seVolume)
     {
         seSlider.value = seVolume;
+    }
 
+    public void SetVolume(float vm, float vb, float vs)
+    {
+        MasterSilider = vm;
+        BgmSlider = vb;
+        SeSlider = vs;
     }
 
     // スライダーに変更があったら値を反映させる(イベント)
