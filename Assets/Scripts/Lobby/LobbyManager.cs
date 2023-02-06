@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using TMPro;
+using SoundSystem;
 using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class LobbyManager : MonoBehaviour
@@ -19,20 +20,27 @@ public class LobbyManager : MonoBehaviour
     // ルーム作成関係
     [SerializeField] GameObject createRoomForm;
     bool isOpenCreateRoomForm = false;                                           // ルーム作成フォームが開いているか
-    const string roomCreateURL = "http://54.168.79.41/room/create";                 // ルーム作成URL
+    const string roomCreateURL = "http://localhost/room/create";                 // ルーム作成URL
+    //const string roomCreateURL = "http://54.168.79.41/room/create";                 // ルーム作成URL
     string createRoom_name = "";                                                 // 作成ルーム名
     string createRoom_password = "";                                             // ログインパスワード
     [Header("ルーム作成関係")]
     [SerializeField] GameObject massage_CreateRoomText;                          // メッセージテキスト(ルーム作成)
     [SerializeField] TMP_InputField room_nameField_CreateRoom;                   // ルーム名入力フィールド(ルーム作成)
     [SerializeField] TMP_InputField passwordField_CreateRoom;                    // パスワード入力フィールド(ルーム作成)
+    int createRoomInputSelected = 0;
     // ルーム参加関係
     bool isOpenSelectRoomForm = false;                                                  // 参加用のフォームが開いているか
     bool updateSelectForm = false;                                                      // 参加選択画面が更新中か
     bool isOpenInputRoomPasswordForm = false;                                           // 参加パスワード入力画面が表示されているか
     bool isEntryRoomInPass = false;                                                     // パスワード入力画面の参加のボタンを押したか
-    const string entryRoomURL = "http://54.168.79.41/room/entry";                          // ルーム参加URL
-    const string updateSelectFormURL = "http://54.168.79.41/room/select_form_update";      // ルーム選択画面更新URL
+    bool isUpdateSelectFormWait = false;
+    float waitTimeValue;                                                                // 更新時間の値
+    const float waitTime = 10f;                                                         // 更新時間
+    const string entryRoomURL = "http://localhost/room/entry";                          // ルーム参加URL
+    //const string entryRoomURL = "http://54.168.79.41/room/entry";                          // ルーム参加URL
+    const string updateSelectFormURL = "http://localhost/room/select_form_update";      // ルーム選択画面更新URL
+    //const string updateSelectFormURL = "http://54.168.79.41/room/select_form_update";      // ルーム選択画面更新URL
     string inputRoomPasswordFormRoomName = "";                                          // パスワード入力画面の参加しようとしているルーム名表記用
     string inputRoomPassword = "";                                                      // 参加しようとしているルームのパスワード(入力されたもの)
     [Header("ルーム参加関係")]
@@ -42,6 +50,8 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] GameObject inputRoomPasswordForm;                                  // 参加ルームのパスワード入力画面
     [SerializeField] GameObject inputRoomPasswordRoomNameText;                          // パスワード入力画面のルーム名
     [SerializeField] GameObject inputRoomPasswordMessageText;                           // パスワード入力画面のメッセージテキスト
+    [SerializeField] GameObject waitTimeMessage;                                        // 最更新可能までのメッセージテキスト
+    [SerializeField] GameObject updateRoomButton;                                       // ルーム更新ボタン
     [SerializeField] TMP_InputField passwordField_EntryRoom;                            // パスワード入力フィールド(ルーム参加)
     // ルーム待機関係
     bool updateRoomForm = false;                                                        // ルーム情報更新フラグ
@@ -50,10 +60,14 @@ public class LobbyManager : MonoBehaviour
     bool isEntryRedy = false;                                                           // 参加者が準備完了か
     bool isReady = false;                                                               // 準備完了ボタンを押したか
     bool leaveRoom = false;                                                             // 退出ボタンを押したか
-    const string readyURL = "http://54.168.79.41/room/ready_user_room";                    // 準備完了変更URL
-    const string leaveRoomURL = "http://54.168.79.41/room/leave_room";                     // 退出用URL
-    const string updateRoomFormURL = "http://54.168.79.41/room/room_form_update";          // ルーム情報更新用URL
-    const string gameStartURL = "http://54.168.79.41/room/gamestart_room";                 // ゲーム開始URL
+    const string readyURL = "http://localhost/room/ready_user_room";                    // 準備完了変更URL
+    //const string readyURL = "http://54.168.79.41/room/ready_user_room";                    // 準備完了変更URL
+    const string leaveRoomURL = "http://localhost/room/leave_room";                     // 退出用URL
+    //const string leaveRoomURL = "http://54.168.79.41/room/leave_room";                     // 退出用URL
+    const string updateRoomFormURL = "http://localhost/room/room_form_update";          // ルーム情報更新用URL
+    //const string updateRoomFormURL = "http://54.168.79.41/room/room_form_update";          // ルーム情報更新用URL
+    const string gameStartURL = "http://localhost/room/gamestart_room";                 // ゲーム開始URL
+    //const string gameStartURL = "http://54.168.79.41/room/gamestart_room";                 // ゲーム開始URL
     [Header("ルーム待機関係")]
     [SerializeField] GameObject[] entryUsersUI;                                         // 待機中のユーザー表記
     [SerializeField] GameObject[] userRadyIcon;                                         // 準備完了の表記
@@ -72,6 +86,7 @@ public class LobbyManager : MonoBehaviour
         message_RoomText.GetComponent<TextMeshProUGUI>().text = "";
         entryUsersUI[0].GetComponent<TextMeshProUGUI>().text = "";
         entryUsersUI[1].GetComponent<TextMeshProUGUI>().text = "";
+        waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
         roomForm.SetActive(false);
         createRoomForm.SetActive(false);
         roomsSelectForm.SetActive(false);
@@ -82,12 +97,13 @@ public class LobbyManager : MonoBehaviour
 
     void Update()
     {
-
+        InputSelectCreateRoom();
     }
 
     private void FixedUpdate()
     {
         RoomKeepUpdate();
+        UpdateRoomSelectFormWaitTime(waitTime);
     }
 
     // ユーザーネーム表示
@@ -103,10 +119,33 @@ public class LobbyManager : MonoBehaviour
     {
         createRoom_name = room_nameField_CreateRoom.text;
     }
-    // パスワードinput
+    // ルーム名select
+    public void SelectRoomNameCreateRoom() => createRoomInputSelected = 1;
+    // ルームパスワードinput
     public void InputPasswordCreateRoom()
     {
         createRoom_password = passwordField_CreateRoom.text;
+    }
+    // ルームパスワードselect
+    public void SelecttPasswordCreateRoom() => createRoomInputSelected = 0;
+    // Tabで切り替え
+    private void InputSelectCreateRoom()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            createRoomInputSelected++;
+            if (createRoomInputSelected > 1) { createRoomInputSelected = 0; }
+
+            switch (createRoomInputSelected)
+            {
+                case 0:
+                    passwordField_CreateRoom.Select();
+                    break;
+                case 1:
+                    room_nameField_CreateRoom.Select();
+                    break;
+            }
+        }
     }
     // ルーム作成フォーム表示
     public void OpenCreateRoomForm()
@@ -183,6 +222,7 @@ public class LobbyManager : MonoBehaviour
         if (!isOpenSelectRoomForm)
         {
             isOpenSelectRoomForm = true;
+            UpdateRoomSelectFormWaitTimeReset();
             roomsSelectForm.SetActive(true);
             StartCoroutine(UpdateRoomSelectFormProcess());
         }
@@ -193,6 +233,10 @@ public class LobbyManager : MonoBehaviour
         if (isOpenSelectRoomForm)
         {
             isOpenSelectRoomForm = false;
+            updateSelectForm = false;
+            isUpdateSelectFormWait = false;
+            updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
+            waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
             roomsSelectForm.SetActive(false);
         }
     }
@@ -212,7 +256,10 @@ public class LobbyManager : MonoBehaviour
         if (isOpenInputRoomPasswordForm)
         {
             isOpenInputRoomPasswordForm = false;
+            passwordField_EntryRoom.text = "";
+            inputRoomPasswordMessageText.GetComponent<TextMeshProUGUI>().text = "";
             inputRoomPasswordForm.SetActive(false);
+            UpdateRoomSelectFormWaitTimeReset();
         }
     }
     // パスワードinput
@@ -254,6 +301,9 @@ public class LobbyManager : MonoBehaviour
                 passwordField_EntryRoom.text = "";
                 roomsSelectForm.SetActive(false);
                 OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status);
+                isOpenInputRoomPasswordForm = false;
+                inputRoomPasswordMessageText.GetComponent<TextMeshProUGUI>().text = "";
+                inputRoomPasswordForm.SetActive(false);
             }
             else if (resData.requestMessage == 2)                   // エラー2が返ってきたとき
             {
@@ -263,6 +313,8 @@ public class LobbyManager : MonoBehaviour
             {
                 print("error");
             }
+
+            isEntryRoomInPass = isEntryRoomInPass == true ? false : true;
         }
     }
 
@@ -272,6 +324,7 @@ public class LobbyManager : MonoBehaviour
         if (!updateSelectForm)
         {
             updateSelectForm = true;
+            SoundManager.Instance.PlayOneShotSe("ui_click");
             StartCoroutine(UpdateRoomSelectFormProcess());
         }
     }
@@ -307,9 +360,56 @@ public class LobbyManager : MonoBehaviour
                 SelectRoomManager selectRoomManagerCS = roomUIclone.GetComponent<SelectRoomManager>();
                 selectRoomManagerCS.SetRoomData(resData.allRoomList[i].room_name, resData.allRoomList[i].room_password, resData.allRoomList[i].in_room_users, resData.allRoomList[i].max_room_users);
             }
-            updateSelectForm = false;
         }
 
+    }
+    void UpdateRoomSelectFormWaitTime(float time)
+    {
+        if (!updateSelectForm) { return; }
+        else
+        {
+            updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 0.2f);
+            if (!isUpdateSelectFormWait)
+            {
+                isUpdateSelectFormWait = true;
+                waitTimeValue = time;
+            }
+
+            if (waitTimeValue <= 0)
+            {
+                UpdateRoomSelectFormWaitTimeReset();
+            }
+            else
+            {
+                waitTimeValue -= Time.deltaTime;
+                waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "再更新可能まで\n" + waitTimeValue.ToString("00");
+            }
+        }
+    }
+    void UpdateRoomSelectFormWaitTimeReset() // ルーム検索更新待機状態をリセットする
+    {
+        updateSelectForm = false;
+        isUpdateSelectFormWait = false;
+        waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
+        updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
+    }
+    // ポインター処理
+    public void UpdateRoomButtonPointerEnter()
+    {
+        if (!updateSelectForm)
+        {
+            SoundManager.Instance.PlayOneShotSe("ui_enter");
+            updateRoomButton.GetComponent<Image>().color = new Color(1f, 0.5f, 0f, 1f);
+        }
+        else { return; }
+    }
+    public void UpdateRoomButtonPointerExit()
+    {
+        if (!updateSelectForm)
+        {
+            updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
+        }
+        else { return; }
     }
     #endregion
     #region ルーム関係
@@ -463,6 +563,7 @@ public class LobbyManager : MonoBehaviour
                 OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status);
                 roomDataManagerCS.SetRoomData(resData.roomData.room_name, resData.roomData.user_host, resData.roomData.user_entry);
             }
+            yield return new WaitForSeconds(0.3f);
             updateRoomForm = false;
         }
     }

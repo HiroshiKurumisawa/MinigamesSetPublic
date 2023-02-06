@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;
+using SoundSystem;
 using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class TitleManager : MonoBehaviour
@@ -14,26 +15,26 @@ public class TitleManager : MonoBehaviour
 
     // アカウントログイン
     bool isAccountLogin = false;                                            // アカウントログインフラグ
-    //const string accountLoginURL = "http://localhost/user/account/login";   // アカウントログインURL
-    const string accountLoginURL = "http://54.168.79.41/user/account/login";   // アカウントログインURL
+    const string accountLoginURL = "http://localhost/user/account/login";   // アカウントログインURL
+    //const string accountLoginURL = "http://54.168.79.41/user/account/login";   // アカウントログインURL
     string loginUser_name = "";                                             // ログインユーザー名
     string loginUser_password = "";                                         // ログインパスワード
     [Header("ユーザーログイン関係")]
     [SerializeField] GameObject massage_LoginText;                          // メッセージテキスト(ログイン)
     [SerializeField] TMP_InputField user_nameField_Login;                   // ユーザーネーム入力フィールド(ログイン)
     [SerializeField] TMP_InputField passwordField_Login;                    // パスワード入力フィールド(ログイン)
-
+    int loginInputSelected = 0;
     // ゲストログイン
     bool isGuestLogin = false;                                              // ゲストログインフラグ
-    //const string guestLoginURL = "http://localhost/user/guest/login";       // ゲストログインURL
-    const string guestLoginURL = "http://54.168.79.41/user/guest/login";       // ゲストログインURL
+    const string guestLoginURL = "http://localhost/user/guest/login";       // ゲストログインURL
+    //const string guestLoginURL = "http://54.168.79.41/user/guest/login";       // ゲストログインURL
 
     // ユーザー作成
     bool openCreateForm = false;                                            // ユーザー作成フォームが開いているか
     bool isCreateAccont = false;                                            // 作成ボタンを押したかどうか
     public bool IsCreateAccount { get { return isCreateAccont; } }
-    //const string createAccountURL = "http://localhost/user/account/create"; // アカウント作成URL
-    const string createAccountURL = "http://54.168.79.41/user/account/create"; // アカウント作成URL
+    const string createAccountURL = "http://localhost/user/account/create"; // アカウント作成URL
+    //const string createAccountURL = "http://54.168.79.41/user/account/create"; // アカウント作成URL
     string createUser_name = "";                                            // アカウント作成ユーザ名
     string createUser_password = "";                                        // アカウント作成パスワード
     string createUser_rePassword = "";                                      // アカウント作成パスワード再入力
@@ -43,6 +44,7 @@ public class TitleManager : MonoBehaviour
     [SerializeField] TMP_InputField user_nameField;                         // ユーザーネーム入力フィールド
     [SerializeField] TMP_InputField passwordField;                          // パスワード入力フィールド
     [SerializeField] TMP_InputField rePasswordField;                        // パスワード再入力フィールド
+    int createInputSelected = 0;
 
     [Header("ゲーム終了関係")]
     [SerializeField] GameObject quitGameForm;
@@ -59,17 +61,48 @@ public class TitleManager : MonoBehaviour
     void Start()
     {
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
+        SoundManager.Instance.PlayBGMWithFadeIn("Title_Lobby", 1f);
+    }
+
+    private void Update()
+    {
+        InputSelectLogin();
+        InputSelectCreateUser();
     }
 
     #region アカウントログイン関係
+    // ユーザー名input
     public void InputUserNameLogin()
     {
         loginUser_name = user_nameField_Login.text;
     }
+    // ユーザー名select
+    public void SelectUserNameLogin() => loginInputSelected = 1;
     // パスワードinput
     public void InputPasswordLogin()
     {
         loginUser_password = passwordField_Login.text;
+    }
+    // パスワードselect
+    public void SelectPasswordLogin() => loginInputSelected = 0;
+    // Tabで切り替え
+    private void InputSelectLogin()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            loginInputSelected++;
+            if (loginInputSelected > 1) { loginInputSelected = 0; }
+
+            switch (loginInputSelected)
+            {
+                case 0:
+                    passwordField_Login.Select();
+                    break;
+                case 1:
+                    user_nameField_Login.Select();
+                    break;
+            }
+        }
     }
     // ログインボタンが押されたとき(AccountLogin用UIのEventTriggerのPointerClickに使う)
     public void AccountLogin()
@@ -77,9 +110,7 @@ public class TitleManager : MonoBehaviour
         if (!isAccountLogin)
         {
             isAccountLogin = true;
-            {
-                StartCoroutine(AccountLoginProcess());
-            }
+            StartCoroutine(AccountLoginProcess());
         }
     }
     IEnumerator AccountLoginProcess()
@@ -109,10 +140,22 @@ public class TitleManager : MonoBehaviour
                     massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(入力内容に誤りがあります)";
                     isAccountLogin = false;
                 }
-                else if (resData.requestMessage == 2)   // すでにログインされている状態
+                else if (resData.requestMessage == 2)   // パスワードが違う場合状態
+                {
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(パスワードに誤りがあります)";
+                    isAccountLogin = false;
+                }
+                else if (resData.requestMessage == 3)   // すでにログインされている状態
                 {
                     massage_LoginText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
                     massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(既にログインしています)";
+                    isAccountLogin = false;
+                }
+                else if (resData.requestMessage == 4)   // アカウントがない場合
+                {
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                    massage_LoginText.GetComponent<TextMeshProUGUI>().text = "ログイン失敗(入力されたアカウントが存在しません)";
                     isAccountLogin = false;
                 }
                 else                                    // ログインできるとき
@@ -167,22 +210,52 @@ public class TitleManager : MonoBehaviour
     {
         createUser_name = user_nameField.text;
     }
+    // ユーザー名select
+    public void SelectUserName() => createInputSelected = 1;
     // パスワードinput
     public void InputPassword()
     {
         createUser_password = passwordField.text;
     }
+    // パスワードselect
+    public void SelectPassword() => createInputSelected = 2;
     // 再入力パスワードinput
     public void InputRePassword()
     {
         createUser_rePassword = rePasswordField.text;
     }
+    // 再入力パスワードselect
+    public void SelectRePassword() => createInputSelected = 0;
+    // Tabで切り替え
+    private void InputSelectCreateUser()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            createInputSelected++;
+            if (createInputSelected > 2) { createInputSelected = 0; }
+
+            switch (createInputSelected)
+            {
+                case 0:
+                    rePasswordField.Select();
+                    break;
+                case 1:
+                    user_nameField.Select();
+                    break;
+                case 2:
+                    passwordField.Select();
+                    break;
+            }
+        }
+    }
+
     // 新規作成ボタンを押したとき
     public void OpenCreateFormUI()
     {
         if (!openCreateForm)
         {
             openCreateForm = true;
+            createInputSelected = 0;
             createFormUI.SetActive(true);
         }
     }
@@ -202,6 +275,7 @@ public class TitleManager : MonoBehaviour
         if (!isCreateAccont)
         {
             isCreateAccont = true;
+            createInputSelected = 0;
             StartCoroutine(CreateAccountProcess());
         }
     }
@@ -226,18 +300,40 @@ public class TitleManager : MonoBehaviour
         {
             AccountCreateRoot resData = JsonUtility.FromJson<AccountCreateRoot>(request.downloadHandler.text);
 
-            if (resData.requestMessage == 0)
+            if (resData.requestMessage == 0)    // 成功
             {
                 user_nameField.text = "";
                 passwordField.text = "";
                 rePasswordField.text = "";
                 massageText.GetComponent<TextMeshProUGUI>().color = new Color(0, 0, 255);
                 massageText.GetComponent<TextMeshProUGUI>().text = "作成成功";
+                yield return new WaitForSeconds(0.8f);
+                CloseCrateFormUI();
             }
-            else if (resData.requestMessage == 1)
+            else if (resData.requestMessage == 1)   // ユーザーが既に登録されている
             {
                 massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
-                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗(入力内容が不適切です)";
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(ユーザー名が入力されていません)";
+            }
+            else if (resData.requestMessage == 2)   // ユーザー名に禁止ワードが入っている
+            {
+                massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(同じユーザー名が既に登録されています)";
+            }
+            else if (resData.requestMessage == 3)   // ユーザー名が入力されていない
+            {
+                massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(ユーザー名に\"ゲスト\"が含まれています)";
+            }
+            else if (resData.requestMessage == 4)   // パスワードに不備がある
+            {
+                massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(パスワードが正しく入力されていません)";
+            }
+            else if (resData.requestMessage == 5)
+            {
+                massageText.GetComponent<TextMeshProUGUI>().color = new Color(255, 0, 0);
+                massageText.GetComponent<TextMeshProUGUI>().text = "作成失敗\n(ユーザー名とパスワード両方に不備があります)";
             }
         }
         isCreateAccont = false;
