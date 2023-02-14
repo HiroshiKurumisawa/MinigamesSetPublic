@@ -6,7 +6,6 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using TMPro;
 using SoundSystem;
-using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class LobbyManager : MonoBehaviour
 {
@@ -81,6 +80,7 @@ public class LobbyManager : MonoBehaviour
 
     void Start()
     {
+        SoundManager.Instance.PlayBGMWithFadeIn("Title_Lobby", 1f);
         inputRoomPasswordMessageText.GetComponent<TextMeshProUGUI>().text = "";
         massage_CreateRoomText.GetComponent<TextMeshProUGUI>().text = "";
         message_RoomText.GetComponent<TextMeshProUGUI>().text = "";
@@ -432,7 +432,8 @@ public class LobbyManager : MonoBehaviour
         else { gameStartButton.SetActive(false); }
         if (gameStart)
         {
-            SceneManager.LoadScene("Main"); /*シーン遷移*/
+            SoundManager.Instance.StopBGMWithFadeOut(1f);
+            FadeManager.Instance.LoadScene("Main", 0.5f);
         }
     }
 

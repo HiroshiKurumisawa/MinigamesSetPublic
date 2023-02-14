@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using SoundSystem;
 using UnityEngine.Networking;
-using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class LogOutManager : MonoBehaviour
 {
@@ -64,7 +64,8 @@ public class LogOutManager : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene("Title");        // シーン遷移
+            SoundManager.Instance.StopBGMWithFadeOut(1f);
+            FadeManager.Instance.LoadScene("Title", 0.5f);
         }
     }
 }

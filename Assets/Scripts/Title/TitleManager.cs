@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;
 using SoundSystem;
-using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class TitleManager : MonoBehaviour
 {
@@ -163,7 +162,8 @@ public class TitleManager : MonoBehaviour
                     loginManagerCS.SetUserData(resData.account_data.manage_id, resData.account_data.login_id, resData.account_data.user_name,
                              resData.account_data.last_login, resData.account_data.created, resData.account_data.modified, resData.account_data.connection_status, 0);
 
-                    SceneManager.LoadScene("Lobby");        // シーン遷移
+                    SoundManager.Instance.StopBGMWithFadeOut(1f);
+                    FadeManager.Instance.LoadScene("Lobby", 0.5f);
                 }
             }
 
@@ -200,7 +200,8 @@ public class TitleManager : MonoBehaviour
             loginManagerCS.SetUserData(resData.guest_data.manage_id, resData.guest_data.login_id, resData.guest_data.user_name,
                 resData.guest_data.last_login, resData.guest_data.created, resData.guest_data.modified, resData.guest_data.connection_status, 1);
 
-            SceneManager.LoadScene("Lobby");        // シーン遷移
+            SoundManager.Instance.StopBGMWithFadeOut(1f);
+            FadeManager.Instance.LoadScene("Lobby", 0.5f);
         }
     }
     #endregion

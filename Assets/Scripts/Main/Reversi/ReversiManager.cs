@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using TMPro;
 using SoundSystem;
-using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
 
 public class ReversiManager : MonoBehaviour
 {
@@ -92,6 +91,7 @@ public class ReversiManager : MonoBehaviour
 
     void Start()
     {
+        SoundManager.Instance.PlayBGMWithFadeIn("Main", 1f);
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
         roomDataCS = GameObject.FindObjectOfType<RoomDataManager>();
         CreateStage();
@@ -201,7 +201,8 @@ public class ReversiManager : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene("Lobby"); /*シーン遷移*/
+            SoundManager.Instance.StopBGMWithFadeOut(1f);
+            FadeManager.Instance.LoadScene("Lobby", 0.5f);
         }
     }
 
@@ -355,6 +356,7 @@ public class ReversiManager : MonoBehaviour
     {
         if (point != "PassButton")
         {
+            SoundManager.Instance.PlayOneShotSe("reversi_put");
             var putPos = GameObject.Find(point).transform;
             GameObject stoneClone = Instantiate(stonePrefab, putPos.position, Quaternion.identity, putPos);
             if (turnStatusNum == blackTurnNum)

@@ -51,6 +51,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9b248cf32226e5343aa17ee958d2f956, type: 3}
   - {fileID: 8300000, guid: 7f22b6f5c94872c4b879c4481db24769, type: 3}
   - {fileID: 8300000, guid: 1f67a12c76d20744ea88b7f563734cc8, type: 3}
+  - {fileID: 8300000, guid: 117f4a1512f84994a8400c59440d743b, type: 3}
   audioMixer: {fileID: 24100000, guid: d29ca9414b0d7704888d49744558ba9e, type: 2}
   bgmAMG: {fileID: -2076695243131142837, guid: d29ca9414b0d7704888d49744558ba9e, type: 2}
   seAMG: {fileID: -1435476845206753100, guid: d29ca9414b0d7704888d49744558ba9e, type: 2}
