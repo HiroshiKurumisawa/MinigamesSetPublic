@@ -1942,10 +1942,10 @@ MonoBehaviour:
   whiteStonesText: {fileID: 600666959}
   blackStonesUser: {fileID: 1445383833}
   whiteStonesUser: {fileID: 1966590546}
+  Option: {fileID: 1073996439}
   beaseStage: {fileID: 1662405516}
   tileCreatePoint: {fileID: 1673094107}
   tilePrefab: {fileID: 8362442695806690026, guid: 56dc32277f2f4c041b3d8eb2a11e720d, type: 3}
-  putPointUIobj: {fileID: 4655972079577288880, guid: 352333a6e75946f47a0a44b403c3c8c3, type: 3}
   DirectionList:
   - {x: -95, y: 95}
   - {x: 0, y: 95}
@@ -2664,6 +2664,11 @@ PrefabInstance:
 --- !u!4 &1073996438 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5141386624855746333, guid: 3c0b538e988284a469bc39cfd5acf672, type: 3}
+  m_PrefabInstance: {fileID: 1073996437}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1073996439 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5141386624855746334, guid: 3c0b538e988284a469bc39cfd5acf672, type: 3}
   m_PrefabInstance: {fileID: 1073996437}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1350832092

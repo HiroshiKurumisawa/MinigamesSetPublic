@@ -31,6 +31,8 @@ public class ReversiManager : MonoBehaviour
     TextMeshProUGUI blackStonesUser;
     [SerializeField, Header("白石ユーザー")]
     TextMeshProUGUI whiteStonesUser;
+    [SerializeField, Header("オプション")]
+    GameObject Option;
     const int blackTurnNum = 0;
     const int WhiteTrunNum = 1;
     const int blackWinNum = 2;
@@ -106,6 +108,18 @@ public class ReversiManager : MonoBehaviour
         EndGame();
     }
 
+    private void OnApplicationQuit()
+    {
+        if (roomDataCS.User_host == loginManagerCS.User_name) // 黒が切断したとき
+        {
+            StartCoroutine(SurrenderProcess(blackSurrenderNum));
+        }
+        else if (roomDataCS.User_entry == loginManagerCS.User_name) // 白が切断したとき
+        {
+            StartCoroutine(SurrenderProcess(whiteSurrenderNum));
+        }
+    }
+
     void EndGame()
     {
         switch (thisStatusNum)
@@ -163,6 +177,7 @@ public class ReversiManager : MonoBehaviour
         if (!isGameEnd)
         {
             isGameEnd = true;
+            Option.SetActive(false);
             endForm.SetActive(true);
             endFormText.text = resultString;
             returnLobbycountDownValue = retrunSceneCountNum;
