@@ -38,7 +38,7 @@ public class ReversiManager : MonoBehaviour
     const int blackSurrenderNum = 4;
     const int whiteSurrenderNum = 5;
     const int drowNum = 6;
-    int thisStatusNum;
+    int thisStatusNum = 0;
     int allstonesNum = 0;
     bool isGameEnd = false;
     bool surrender = false;
@@ -60,7 +60,7 @@ public class ReversiManager : MonoBehaviour
     GameObject tileCreatePoint;
     [SerializeField, Header("タイルのPrefab")]
     GameObject tilePrefab;
-    List<Vector2> tilePoint;
+    List<GameObject> tilePoint;
     [SerializeField, Header("方向リスト")]
     List<Vector2> DirectionList;        // 左上は(-1,1)
     [SerializeField, Header("石のPrefab")]
@@ -108,7 +108,7 @@ public class ReversiManager : MonoBehaviour
 
     void EndGame()
     {
-        switch(thisStatusNum)
+        switch (thisStatusNum)
         {
             case blackWinNum:
                 ReturnLobby(returnLobbyCountNum, roomDataCS.User_host + "(黒)の勝利");
@@ -210,15 +210,41 @@ public class ReversiManager : MonoBehaviour
     private void CreateStage()
     {
         var stageSize = beaseStage.GetComponent<Image>().rectTransform.rect;
-        tilePoint = new List<Vector2>();
+        tilePoint = new List<GameObject>();
         for (int i = 0; i < (int)stageSize.height && i < 8; i++)
         {
             for (int j = 0; j < (int)stageSize.width && j < 8; j++)
             {
-                tilePoint.Add(new Vector2(j, i));
                 GameObject tileClone = Instantiate(tilePrefab, tileCreatePoint.transform.position + new Vector3(j, i, 0), Quaternion.identity, beaseStage.transform);
                 tileClone.name = i.ToString() + "-" + j.ToString();
+                if (loginManagerCS.User_name == roomDataCS.User_host)
+                {
+                    if (tileClone.name == "2-3" || tileClone.name == "3-2" || tileClone.name == "5-4" || tileClone.name == "4-5") { tileClone.GetComponent<Image>().color = Color.red; }
+                }
+                tilePoint.Add(tileClone);
             }
+        }
+    }
+
+    private void PutArea()
+    {
+        for (int i = 0; i < tilePoint.Count; i++)
+        {
+            tilePoint[i].GetComponent<Image>().color = Color.green;
+            var rectpos = GameObject.Find(tilePoint[i].name).GetComponent<RectTransform>();
+            var putWorldPos = GetWorldPositionFromRectPosition(rectpos);
+            if (IsPutImpossible(putWorldPos) && (tilePoint[i].transform.childCount == 0))
+            {
+                tilePoint[i].GetComponent<Image>().color = Color.red;
+            }
+        }
+    }
+
+    private void StageColorReset()
+    {
+        for (int i = 0; i < tilePoint.Count; i++)
+        {
+            tilePoint[i].GetComponent<Image>().color = Color.green;
         }
     }
 
@@ -258,6 +284,8 @@ public class ReversiManager : MonoBehaviour
             BlackSpeachBalloonUI.SetActive(false);
             whiteSpeachBalloon.SetActive(true);
             turnText.text = "白のターンです";
+            if (loginManagerCS.User_name == roomDataCS.User_entry) { PutArea(); }
+            else { StageColorReset(); }
         }
         else if (statusNum == WhiteTrunNum)
         {
@@ -265,6 +293,8 @@ public class ReversiManager : MonoBehaviour
             whiteSpeachBalloon.SetActive(false);
             BlackSpeachBalloonUI.SetActive(true);
             turnText.text = "黒のターンです";
+            if (loginManagerCS.User_name == roomDataCS.User_host) { PutArea(); }
+            else { StageColorReset(); }
         }
         else { return; }
     }

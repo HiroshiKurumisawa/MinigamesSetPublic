@@ -55,6 +55,7 @@ public class LobbyManager : MonoBehaviour
     // ルーム待機関係
     bool updateRoomForm = false;                                                        // ルーム情報更新フラグ
     bool gameStart = false;                                                             // ゲーム開始ボタンを押したか
+    bool mainSceneChange = false;
     bool isHostReady = false;                                                           // ホスト準備完了か
     bool isEntryRedy = false;                                                           // 参加者が準備完了か
     bool isReady = false;                                                               // 準備完了ボタンを押したか
@@ -430,8 +431,9 @@ public class LobbyManager : MonoBehaviour
         else { userRadyIcon[1].SetActive(false); }
         if (loginManagerCS.User_name == hostUser) { gameStartButton.SetActive(true); }
         else { gameStartButton.SetActive(false); }
-        if (gameStart)
+        if (gameStart&& !mainSceneChange)
         {
+            mainSceneChange = true;
             SoundManager.Instance.StopBGMWithFadeOut(1f);
             FadeManager.Instance.LoadScene("Main", 0.5f);
         }
