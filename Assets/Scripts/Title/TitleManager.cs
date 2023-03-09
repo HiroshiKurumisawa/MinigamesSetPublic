@@ -106,7 +106,7 @@ public class TitleManager : MonoBehaviour
     // ログインボタンが押されたとき(AccountLogin用UIのEventTriggerのPointerClickに使う)
     public void AccountLogin()
     {
-        if (!isAccountLogin)
+        if (!isAccountLogin && !isGuestLogin)
         {
             isAccountLogin = true;
             StartCoroutine(AccountLoginProcess());
@@ -174,7 +174,7 @@ public class TitleManager : MonoBehaviour
     // ゲストログインボタンが押されたとき(GuestLogin用UIのEventTriggerのPointerClickに使う)
     public void GuestLogin()
     {
-        if (!isGuestLogin)
+        if (!isGuestLogin && !isAccountLogin)
         {
             isGuestLogin = true;
             StartCoroutine(GuestLoginProcess());
