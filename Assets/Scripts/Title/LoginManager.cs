@@ -6,8 +6,6 @@ public class LoginManager : MonoBehaviour
 {
     #region インスタンス関係
     public static LoginManager Instance { get; private set; }
-    bool isVectory;
-    public bool IsVectory { get { return isVectory; } set { isVectory = value; } }
     #endregion
 
     #region 変数群

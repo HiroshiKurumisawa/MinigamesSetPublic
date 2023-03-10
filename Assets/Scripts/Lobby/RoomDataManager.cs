@@ -6,8 +6,6 @@ public class RoomDataManager : MonoBehaviour
 {
     #region インスタンス関係
     public static RoomDataManager Instance { get; private set; }
-    bool isVectory;
-    public bool IsVectory { get { return isVectory; } set { isVectory = value; } }
     #endregion
 
     #region 変数群
