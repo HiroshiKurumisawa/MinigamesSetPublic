@@ -14,8 +14,8 @@ public class LogOutManager : MonoBehaviour
 
     bool openLogOutForm = false;
     bool isLogOut = false;                                     // ログアウトフラグ
-    const string logOutURL = "http://localhost/user/logout";         // ログアウトURL
-    //const string logOutURL = "http://54.168.79.41/user/logout";         // ログアウトURL
+    //const string logOutURL = "http://localhost/user/logout";         // ログアウトURL
+    const string logOutURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/logout";         // ログアウトURL
     #endregion
 
     void Start()

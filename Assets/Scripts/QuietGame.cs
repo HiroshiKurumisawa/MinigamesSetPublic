@@ -14,8 +14,8 @@ public class QuietGame : MonoBehaviour
     #endregion
     #region 変数群
     LoginManager loginManagerCS;
-    const string logOutURL = "http://localhost/user/logout";         // ログアウトURL
-    //const string logOutURL = "http://54.168.79.41/user/logout";         // ログアウトURL
+    //const string logOutURL = "http://localhost/user/logout";         // ログアウトURL
+    const string logOutURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/logout";         // ログアウトURL
     #endregion
 
     private void Awake()
