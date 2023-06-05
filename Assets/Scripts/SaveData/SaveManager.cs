@@ -10,8 +10,8 @@ public class SaveManager : MonoBehaviour
     const string FileName = "/savedata.dat";
     // セーブデータのデフォルト値
     const float DefaultVolumeMaster = 1.0f;
-    const float DefaultVolumeBgm = 0.5f;
-    const float DefaultVolumeSe = 0.5f;
+    const float DefaultVolumeBgm = 1.0f;
+    const float DefaultVolumeSe = 1.0f;
 
     FileStream file;
     BinaryFormatter bf;
