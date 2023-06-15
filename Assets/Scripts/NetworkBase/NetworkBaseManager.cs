@@ -22,9 +22,14 @@ public class NetworkBaseManager : MonoBehaviour
     protected const string updateRoomFormURL = "http://localhost/room/room_form_update";            // ルーム情報更新用URL
     protected const string gameStartURL = "http://localhost/room/gamestart_room";                   // ゲーム開始URL  
     // リバーシ
-    protected const string updateGameURL = "http://localhost/game/update_game";
-    protected const string putStoneURL = "http://localhost/game/putStone_game";
-    protected const string surrenderURL = "http://localhost/game/surrender_game";
+    protected const string reversiUpdateGameURL = "http://localhost/game/update_game";
+    protected const string reversiPutStoneURL = "http://localhost/game/putStone_game";
+    protected const string reversiSurrenderURL = "http://localhost/game/surrender_game";
+    //
+    // 五目並べ
+    protected const string gomokuUpdateGameURL = "";
+    protected const string gomokuPutStoneURL = "";
+    protected const string gomokuSurrenderURL = "";
     //
     #endregion
     #region ServerURL
@@ -40,9 +45,14 @@ public class NetworkBaseManager : MonoBehaviour
     //protected const string updateRoomFormURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/room_form_update";          // ルーム情報更新用URL
     //protected const string gameStartURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/gamestart_room";                 // ゲーム開始URL
     // リバーシ
-    //protected const string updateGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/update_game";
-    //protected const string putStoneURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/putStone_game";
-    //protected const string surrenderURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/surrender_game";
+    //protected const string reversiUpdateGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/update_game";
+    //protected const string reversiPutStoneURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/putStone_game";
+    //protected const string reversiSurrenderURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/surrender_game";
+    //
+    // 五目並べ
+    //protected const string gomokuUpdateGameURL = "";
+    //protected const string gomokuPutStoneURL = "";
+    //protected const string gomokuSurrenderURL = "";
     //
     #endregion
 

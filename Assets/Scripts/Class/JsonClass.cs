@@ -180,4 +180,7 @@ namespace JsonClass
         public int result;
     }
     #endregion
+    #region JSON•ÏŠ·ƒNƒ‰ƒX(ŒÜ–Ú•À‚×)
+    
+    #endregion
 }

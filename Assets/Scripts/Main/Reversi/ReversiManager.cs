@@ -325,7 +325,7 @@ public class ReversiManager : NetworkBaseManager
         postData.AddField("game_status", statusString);
 
         // POSTでデータ送信
-        using UnityWebRequest request = UnityWebRequest.Post(putStoneURL, postData);
+        using UnityWebRequest request = UnityWebRequest.Post(reversiPutStoneURL, postData);
         request.timeout = 10;
         yield return request.SendWebRequest();
 
@@ -351,7 +351,7 @@ public class ReversiManager : NetworkBaseManager
         postData.AddField("room_name", roomDataManagerCS.Room_name);
 
         // POSTでデータ送信
-        using UnityWebRequest request = UnityWebRequest.Post(updateGameURL, postData);
+        using UnityWebRequest request = UnityWebRequest.Post(reversiUpdateGameURL, postData);
         request.timeout = 10;
         yield return request.SendWebRequest();
 
@@ -628,7 +628,7 @@ public class ReversiManager : NetworkBaseManager
         postData.AddField("game_status", statusString);
 
         // POSTでデータ送信
-        using UnityWebRequest request = UnityWebRequest.Post(surrenderURL, postData);
+        using UnityWebRequest request = UnityWebRequest.Post(reversiSurrenderURL, postData);
         request.timeout = 10;
         yield return request.SendWebRequest();
 
