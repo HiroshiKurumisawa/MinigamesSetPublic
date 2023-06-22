@@ -10,6 +10,8 @@ using SoundSystem;
 public class LobbyManager : NetworkBaseManager
 {
     #region 変数群
+    const int Reversi = 0, Gomoku = 1;
+
     // ユーザー名表示
     [SerializeField] GameObject userNameText;
     // ルーム作成関係
@@ -20,9 +22,12 @@ public class LobbyManager : NetworkBaseManager
     string createRoom_password = "";                                             // ログインパスワード
     [Header("ルーム作成関係")]
     [SerializeField] GameObject massage_CreateRoomText;                          // メッセージテキスト(ルーム作成)
+    [SerializeField] GameObject[] ruleTextObjs;                                  // ルールを表示するテキストオブジェクト
     [SerializeField] TMP_InputField room_nameField_CreateRoom;                   // ルーム名入力フィールド(ルーム作成)
     [SerializeField] TMP_InputField passwordField_CreateRoom;                    // パスワード入力フィールド(ルーム作成)
+    [SerializeField] TextMeshProUGUI gameRuleNameText;                           // ゲームモード名テキスト
     int createRoomInputSelected = 0;
+    int gameRuleNum = 0;                                                         // ゲームモード切り替え用
     // ルーム参加関係
     bool isOpenSelectRoomForm = false;                                                  // 参加用のフォームが開いているか
     bool updateSelectForm = false;                                                      // 参加選択画面が更新中か
@@ -61,6 +66,7 @@ public class LobbyManager : NetworkBaseManager
     [SerializeField] GameObject roomPasswordText;                                       // ルームのパスワード表示
     [SerializeField] GameObject message_RoomText;                                       // ルームのメッセージテキスト
     [SerializeField] GameObject gameStartButton;                                        // ゲーム開始ボタン
+    [SerializeField] TextMeshProUGUI gameRuleText;                                      // ゲームルール表示
     #endregion
 
     void Start()
@@ -138,7 +144,9 @@ public class LobbyManager : NetworkBaseManager
         if (!isOpenCreateRoomForm)
         {
             isOpenCreateRoomForm = true;
+            gameRuleNum = 0;
             createRoomForm.SetActive(true);
+            RuleView(gameRuleNum);
         }
     }
     // ルーム作成フォーム非表示
@@ -156,8 +164,46 @@ public class LobbyManager : NetworkBaseManager
         if (isOpenCreateRoomForm)
         {
             isOpenCreateRoomForm = false;
-            StartCoroutine(CreateRoomProcess(createRoom_name, createRoom_password, room_nameField_CreateRoom,
+            StartCoroutine(CreateRoomProcess(createRoom_name, createRoom_password, gameRuleNum.ToString(), room_nameField_CreateRoom,
         passwordField_CreateRoom, massage_CreateRoomText, createRoomForm, x => isOpenCreateRoomForm = x));
+        }
+    }
+
+    // ゲームもどの切り替え
+    public void RuleChangeUPcount()
+    {
+        gameRuleNum++;
+        if (gameRuleNum > 1)
+        {
+            gameRuleNum = 0;
+        }
+        RuleView(gameRuleNum);
+    }
+    public void RuleChangeDowncount()
+    {
+        gameRuleNum--;
+        if (gameRuleNum < 0)
+        {
+            gameRuleNum = 1;
+        }
+
+        RuleView(gameRuleNum);
+    }
+
+    private void RuleView(int ruleNum)
+    {
+        ruleTextObjs[Reversi].SetActive(false);
+        ruleTextObjs[Gomoku].SetActive(false);
+        switch (ruleNum)
+        {
+            case Reversi:
+                ruleTextObjs[Reversi].SetActive(true);
+                gameRuleNameText.text = "オセロ";
+                break;
+            case Gomoku:
+                ruleTextObjs[Gomoku].SetActive(true);
+                gameRuleNameText.text = "五目並べ";
+                break;
         }
     }
 
@@ -287,7 +333,7 @@ public class LobbyManager : NetworkBaseManager
     #endregion
     #region ルーム関係
     // ルーム画面表示
-    public void OpenRoomForm(string roomName, string roomPass, string hostUser, string EntryUser, bool isReadyHost, bool isReadyEntry, bool gameStart)
+    public void OpenRoomForm(string roomName, string roomPass, string hostUser, string EntryUser, bool isReadyHost, bool isReadyEntry, bool gameStart,string game_rule)
     {
         roomForm.SetActive(true);
         roomNameTextUI.GetComponent<TextMeshProUGUI>().text = roomName;
@@ -295,6 +341,15 @@ public class LobbyManager : NetworkBaseManager
         else { roomPasswordText.GetComponent<TextMeshProUGUI>().text = "なし"; }
         entryUsersUI[0].GetComponent<TextMeshProUGUI>().text = hostUser;
         entryUsersUI[1].GetComponent<TextMeshProUGUI>().text = EntryUser;
+        switch(int.Parse(game_rule))
+        {
+            case Reversi:
+                gameRuleText.text = "オセロ";
+                break;
+            case Gomoku:
+                gameRuleText.text = "五目並べ";
+                break;
+        }
         isHostReady = isReadyHost;
         isEntryRedy = isReadyEntry;
         if (isHostReady) { userRadyIcon[0].SetActive(true); }

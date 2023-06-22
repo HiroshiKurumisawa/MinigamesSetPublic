@@ -8,6 +8,7 @@ TagManager:
   - ReversiGrid
   - White
   - Black
+  - GomokuGrid
   layers:
   - Default
   - TransparentFX

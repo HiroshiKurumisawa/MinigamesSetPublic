@@ -38,6 +38,7 @@ public class GomokuManager : NetworkBaseManager
     const int whiteSurrenderNum = 5;
     const int drowNum = 6;
     int thisStatusNum = 0;
+    int allstonesNum = 0;
     bool isGameEnd = false;
     bool surrender = false;
     bool surrenderForm = false;
@@ -74,12 +75,6 @@ public class GomokuManager : NetworkBaseManager
     bool isPutOrPass = false;
     #endregion
 
-    //テスト用
-    const string User_name1 = "test1", User_name2 = "test2";
-    const string Host_user = "test1", Guest_user = "test2";
-
-    string putPoint = "";
-
     void Start()
     {
         SoundManager.Instance.PlayBGMWithFadeIn("Main", 1f);
@@ -93,6 +88,7 @@ public class GomokuManager : NetworkBaseManager
     {
         LimitTime(limitTime);
         UpdateGame();
+        StoneCount();
         EndGame();
     }
 
@@ -101,14 +97,24 @@ public class GomokuManager : NetworkBaseManager
     {
         blackStonesUser.text = roomDataManagerCS.User_host;
         whiteStonesUser.text = roomDataManagerCS.User_entry;
+
         surrenderText.SetActive(false);
         endForm.SetActive(false);
-        StonePut("3-4", blackTurnNum);
-        StonePut("3-3", WhiteTrunNum);
-        StonePut("4-4", WhiteTrunNum);
-        StonePut("4-3", blackTurnNum);
         turnText.text = "黒のターンです";
         whiteSpeachBalloon.SetActive(false);
+    }
+
+    // 石の数を数える
+    void StoneCount()
+    {
+        var whiteStones = GameObject.FindGameObjectsWithTag("White");
+        var blackStones = GameObject.FindGameObjectsWithTag("Black");
+        allstonesNum = whiteStones.Length + blackStones.Length;
+        if (allstonesNum >= 225)
+        {
+            thisStatusNum = drowNum;
+        }
+
     }
 
     // ゲーム情報更新
@@ -258,20 +264,20 @@ public class GomokuManager : NetworkBaseManager
             var rectpos = GameObject.Find(point).GetComponent<RectTransform>();
             var putWorldPos = GetWorldPositionFromRectPosition(rectpos);
 
-            ReverseStoneProcess(putWorldPos);
+            StoneProcess(putWorldPos);
         }
         else
         {
-            putPoint = "";
+            StartCoroutine(PutStonProcess(""));
         }
     }
 
     public void PutStoneOrPass(BaseEventData data)
     {
         var pointerObject = (data as PointerEventData).pointerClick;
-        if (!isPutOrPass && pointerObject.name == "PassButton")
+        if (!isPutOrPass && ((thisStatusNum == blackTurnNum && roomDataManagerCS.User_host == loginManagerCS.User_name) || (thisStatusNum == WhiteTrunNum && roomDataManagerCS.User_entry == loginManagerCS.User_name)) && ((pointerObject.transform.childCount == 0) || pointerObject.name == "PassButton"))
         {
-            putPoint = pointerObject.name;
+            StartCoroutine(PutStonProcess(pointerObject.name));
         }
 
     }
@@ -286,7 +292,7 @@ public class GomokuManager : NetworkBaseManager
         postData.AddField("game_status", statusString);
 
         // POSTでデータ送信
-        using UnityWebRequest request = UnityWebRequest.Post( gomokuPutStoneURL, postData);
+        using UnityWebRequest request = UnityWebRequest.Post(gomokuPutStoneURL, postData);
         request.timeout = 10;
         yield return request.SendWebRequest();
 
@@ -296,8 +302,8 @@ public class GomokuManager : NetworkBaseManager
         }
     }
 
-    // 石の反転処理
-    void ReverseStoneProcess(Vector2 putCell)
+    // 石の判定処理
+    void StoneProcess(Vector2 putCell)
     {
         for (int i = 0; i < DirectionList.Count; i++)
         {
@@ -306,12 +312,13 @@ public class GomokuManager : NetworkBaseManager
             //RaycastAllの結果格納用List
             List<RaycastResult> rayResult = new List<RaycastResult>();
             List<GameObject> reverseObj = new List<GameObject>();
-            ReverseStone(pointData, rayResult, reverseObj, putCell, i, 0);
+            JudgeStone(pointData, rayResult, reverseObj, putCell, i, 0);
         }
     }
 
-    void ReverseStone(PointerEventData point, List<RaycastResult> ray, List<GameObject> reverseObjList, Vector3 inputPos, int directionNum, int count)
+    void JudgeStone(PointerEventData point, List<RaycastResult> ray, List<GameObject> reverseObjList, Vector3 inputPos, int directionNum, int count)
     {
+
         var keepRay = ray;
         var keepObj = reverseObjList;
         Vector3 addPoint = transform.TransformPoint(new Vector3(DirectionList[directionNum].x, DirectionList[directionNum].y, 0));
@@ -324,17 +331,18 @@ public class GomokuManager : NetworkBaseManager
             {
                 if (targetObj.name.Contains("Black"))
                 {
-                    if (count < 5)
+                    if (count >= 3)
+                    {
+                        thisStatusNum = blackWinNum;
+                        keepObj.Clear();
+
+                    }
+                    else
                     {
                         count++;
                         keepObj.Add(targetObj);
-                        ReverseStone(point, keepRay, keepObj, inputPos, directionNum, count);
+                        JudgeStone(point, keepRay, keepObj, inputPos, directionNum, count);
                         break;
-                    }
-                    else if (count >= 5)
-                    {
-                        print("黒の勝利");
-                        keepObj.Clear();
                     }
 
                 }
@@ -351,17 +359,18 @@ public class GomokuManager : NetworkBaseManager
                 }
                 else if (targetObj.name.Contains("White"))
                 {
-                    if (count < 5)
+                    if (count >= 3)
+                    {
+                        thisStatusNum = whiteWinNum;
+                        keepObj.Clear();
+
+                    }
+                    else
                     {
                         count++;
                         keepObj.Add(targetObj);
-                        ReverseStone(point, keepRay, keepObj, inputPos, directionNum, count);
+                        JudgeStone(point, keepRay, keepObj, inputPos, directionNum, count);
                         break;
-                    }
-                    else if (count >= 5)
-                    {
-                        print("白の勝利");
-                        keepObj.Clear();
                     }
                 }
             }
@@ -380,13 +389,12 @@ public class GomokuManager : NetworkBaseManager
     // ステージ生成
     private void CreateStage()
     {
-        var stageSize = beaseStage.GetComponent<Image>().rectTransform.rect;
         tilePoint = new List<GameObject>();
-        for (int i = 0; i < (int)stageSize.height && i < 8; i++)
+        for (int i = 0; i < 15; i++)
         {
-            for (int j = 0; j < (int)stageSize.width && j < 8; j++)
+            for (int j = 0; j < 15; j++)
             {
-                GameObject tileClone = Instantiate(tilePrefab, tileCreatePoint.transform.position + new Vector3(j, i, 0), Quaternion.identity, beaseStage.transform);
+                GameObject tileClone = Instantiate(tilePrefab, tileCreatePoint.transform.position + (new Vector3(j, i, 0)) * 0.6f, Quaternion.identity, beaseStage.transform);
                 tileClone.name = i.ToString() + "-" + j.ToString();
                 tilePoint.Add(tileClone);
             }
@@ -493,6 +501,18 @@ public class GomokuManager : NetworkBaseManager
         {
             SoundManager.Instance.StopBGMWithFadeOut(1f);
             FadeManager.Instance.LoadScene("Lobby", 0.5f);
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        if (roomDataManagerCS.User_host == loginManagerCS.User_name) // 黒が切断したとき
+        {
+            StartCoroutine(SurrenderProcess(blackSurrenderNum));
+        }
+        else if (roomDataManagerCS.User_entry == loginManagerCS.User_name) // 白が切断したとき
+        {
+            StartCoroutine(SurrenderProcess(whiteSurrenderNum));
         }
     }
 }

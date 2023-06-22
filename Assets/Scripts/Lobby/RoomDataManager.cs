@@ -16,6 +16,8 @@ public class RoomDataManager : MonoBehaviour
     public string User_host { get { return user_host; } }
     string user_entry;
     public string User_entry { get { return user_entry; } }
+    string game_rule;
+    public string Game_rule { get { return game_rule; } }
     #endregion
 
     private void Awake()
@@ -33,10 +35,11 @@ public class RoomDataManager : MonoBehaviour
     }
 
     // ルームデータをセットする
-    public void SetRoomData(string roomName, string host, string entry)
+    public void SetRoomData(string roomName, string host, string entry,string gameRule)
     {
         room_name = roomName;
         user_host = host;
         user_entry = entry;
+        game_rule = gameRule;
     }
 }

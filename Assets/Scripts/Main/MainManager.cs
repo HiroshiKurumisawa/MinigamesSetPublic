@@ -10,17 +10,17 @@ public class MainManager : MonoBehaviour
 
     const int Revasi = 0, Gomoku = 1;
 
-    // サーバーから取得する数値にのちに変更する
-    int testNum = 0;
+    RoomDataManager roomDataManagerCS;
 
     private void Start()
     {
+        roomDataManagerCS = GameObject.FindObjectOfType<RoomDataManager>();
         DisplayMiniGame();
     }
 
     void DisplayMiniGame()
     {
-        switch (testNum)
+        switch (int.Parse(roomDataManagerCS.Game_rule))
         {
             case Revasi:
                 minigames[Revasi].SetActive(true);

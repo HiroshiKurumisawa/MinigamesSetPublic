@@ -102,7 +102,7 @@ public class SelectRoomManager : NetworkBaseManager
             if (resData.requestMessage == 0) // ¬Œ÷‚µ‚½‚Æ‚«
             {
                 lobbyManagerCS.roomsSelectForm.SetActive(false);
-                lobbyManagerCS.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status);
+                lobbyManagerCS.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status, resData.roomData.game_rule);
             }
             else if (resData.requestMessage == 2)                   // ƒGƒ‰[2‚ª•Ô‚Á‚Ä‚«‚½‚Æ‚«
             {

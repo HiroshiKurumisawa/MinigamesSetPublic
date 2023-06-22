@@ -27,9 +27,9 @@ public class NetworkBaseManager : MonoBehaviour
     protected const string reversiSurrenderURL = "http://localhost/game/surrender_game";
     //
     // 五目並べ
-    protected const string gomokuUpdateGameURL = "";
-    protected const string gomokuPutStoneURL = "";
-    protected const string gomokuSurrenderURL = "";
+    protected const string gomokuUpdateGameURL = "http://localhost/game/update_game";
+    protected const string gomokuPutStoneURL = "http://localhost/game/putStone_game";
+    protected const string gomokuSurrenderURL = "http://localhost/game/surrender_game";
     //
     #endregion
     #region ServerURL
@@ -239,7 +239,7 @@ public class NetworkBaseManager : MonoBehaviour
 #endregion
     #region ルーム関係
     // ルーム作成
-    protected IEnumerator CreateRoomProcess(string createRoom_name, string createRoom_password, TMP_InputField room_nameField_CreateRoom,
+    protected IEnumerator CreateRoomProcess(string createRoom_name, string createRoom_password,string createRoom_gameRule, TMP_InputField room_nameField_CreateRoom,
         TMP_InputField passwordField_CreateRoom, GameObject massage_CreateRoomText, GameObject createRoomForm, Action<bool> isOpenCreateRoomForm)
     {
         // POST送信用のフォームを作成
@@ -248,6 +248,7 @@ public class NetworkBaseManager : MonoBehaviour
         postData.AddField("room_password", createRoom_password);
         postData.AddField("room_max_users", "2");
         postData.AddField("room_host_user", loginManagerCS.User_name);
+        postData.AddField("room_game_rule", createRoom_gameRule);
 
         // POSTでデータ送信
         using UnityWebRequest request = UnityWebRequest.Post(roomCreateURL, postData);
@@ -270,7 +271,7 @@ public class NetworkBaseManager : MonoBehaviour
                 createRoomForm.SetActive(false);
                 LobbyManager lobbyManager = FindObjectOfType<LobbyManager>();
                 lobbyManager.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host,
-                    resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status);
+                    resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status, resData.roomData.game_rule);
             }
             else if (resData.requestMessage == 1)                   // エラーが返ってきたとき
             {
@@ -310,7 +311,7 @@ public class NetworkBaseManager : MonoBehaviour
                 passwordField_EntryRoom.text = "";
                 roomsSelectForm.SetActive(false);
                 LobbyManager lobbyManager = FindObjectOfType<LobbyManager>();
-                lobbyManager.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status);
+                lobbyManager.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status, resData.roomData.game_rule);
                 isOpenInputRoomPasswordForm(false);
                 inputRoomPasswordMessageText.GetComponent<TextMeshProUGUI>().text = "";
                 inputRoomPasswordForm.SetActive(false);
@@ -462,8 +463,8 @@ public class NetworkBaseManager : MonoBehaviour
             if (roomForm.activeSelf == true)
             {
                 LobbyManager lobbyManager = FindObjectOfType<LobbyManager>();
-                lobbyManager.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status);
-                roomDataManagerCS.SetRoomData(resData.roomData.room_name, resData.roomData.user_host, resData.roomData.user_entry);
+                lobbyManager.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status,resData.roomData.game_rule);
+                roomDataManagerCS.SetRoomData(resData.roomData.room_name, resData.roomData.user_host, resData.roomData.user_entry,resData.roomData.game_rule);
             }
             yield return new WaitForSeconds(0.3f);
             updateRoomForm(false);

@@ -71,6 +71,7 @@ namespace JsonClass
         public bool ready_status_host;
         public bool ready_status_entry;
         public bool game_status;
+        public string game_rule;
     }
     [Serializable]
     public class RoomCreateRoot
@@ -112,6 +113,7 @@ namespace JsonClass
         public bool ready_status_host;
         public bool ready_status_entry;
         public bool game_status;
+        public string game_rule;
     }
     // ƒ‹[ƒ€Q‰Á
     [Serializable]
@@ -145,6 +147,7 @@ namespace JsonClass
         public bool ready_status_host;
         public bool ready_status_entry;
         public bool game_status;
+        public string game_rule;
     }
     [Serializable]
     public class EntryRoomRoot
