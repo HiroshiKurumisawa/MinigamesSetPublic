@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -31,6 +33,8 @@ public class NetworkBaseManager : MonoBehaviour
     protected const string gomokuPutStoneURL = "http://localhost/game/putStone_game";
     protected const string gomokuSurrenderURL = "http://localhost/game/surrender_game";
     //
+    protected const string endGameURL = "http://localhost/game/end_game";                           //対戦終了URL
+    protected const string rankingUpdateURL = "http://localhost/ranking/ranking_view";
     #endregion
     #region ServerURL
     //protected const string accountLoginURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/account/login";               // アカウントログインURL
@@ -50,21 +54,20 @@ public class NetworkBaseManager : MonoBehaviour
     //protected const string reversiSurrenderURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/surrender_game";
     //
     // 五目並べ
-    //protected const string gomokuUpdateGameURL = "";
-    //protected const string gomokuPutStoneURL = "";
-    //protected const string gomokuSurrenderURL = "";
+    //protected const string gomokuUpdateGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/update_game";
+    //protected const string gomokuPutStoneURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/putStone_game";
+    //protected const string gomokuSurrenderURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/surrender_game";
     //
+    //protected const string endGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/end_game";                         // 対戦終了URL
+    //protected const string rankingUpdateURL = "http://ik1-423-43506.vs.sakura.ne.jp/ranking/ranking_view";
     #endregion
 
-    // 一時的なURL
-    protected const string endGameURL = "http://localhost/game/end_game";
-    //protected const string endGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/end_game";
-    //
 
     #region 変数群
     // 必要なデータ保持するためのスクリプト
     protected LoginManager loginManagerCS;
     protected RoomDataManager roomDataManagerCS;
+    const int AccountUser = 0, GuestUser = 1;
     #endregion
     #region ログイン関係
     // ゲストログイン
@@ -236,10 +239,10 @@ public class NetworkBaseManager : MonoBehaviour
             FadeManager.Instance.LoadScene("Title", 0.5f);
         }
     }
-#endregion
+    #endregion
     #region ルーム関係
     // ルーム作成
-    protected IEnumerator CreateRoomProcess(string createRoom_name, string createRoom_password,string createRoom_gameRule, TMP_InputField room_nameField_CreateRoom,
+    protected IEnumerator CreateRoomProcess(string createRoom_name, string createRoom_password, string createRoom_gameRule, TMP_InputField room_nameField_CreateRoom,
         TMP_InputField passwordField_CreateRoom, GameObject massage_CreateRoomText, GameObject createRoomForm, Action<bool> isOpenCreateRoomForm)
     {
         // POST送信用のフォームを作成
@@ -463,12 +466,103 @@ public class NetworkBaseManager : MonoBehaviour
             if (roomForm.activeSelf == true)
             {
                 LobbyManager lobbyManager = FindObjectOfType<LobbyManager>();
-                lobbyManager.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status,resData.roomData.game_rule);
-                roomDataManagerCS.SetRoomData(resData.roomData.room_name, resData.roomData.user_host, resData.roomData.user_entry,resData.roomData.game_rule);
+                lobbyManager.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status, resData.roomData.game_rule);
+                roomDataManagerCS.SetRoomData(resData.roomData.room_name, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.game_rule);
             }
             yield return new WaitForSeconds(0.3f);
             updateRoomForm(false);
         }
     }
     #endregion
+    #region ランキング
+    // ルームの総数更新
+    protected IEnumerator UpdateRankingFormProcess(GameObject acountUIprefab, GameObject rankigScrollView)
+    {
+        // 更新前のルーム情報を削除
+        GameObject[] rankings = GameObject.FindGameObjectsWithTag("Ranking");
+        foreach (GameObject room in rankings)
+        {
+            Destroy(room);
+        }
+
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(rankingUpdateURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+        else
+        {
+            Ranking resData = JsonUtility.FromJson<Ranking>(request.downloadHandler.text);
+
+            for (int i = 0; i < resData.allAcountList.Count; i++)
+            {
+                GameObject roomUIclone = Instantiate(acountUIprefab, transform.position, Quaternion.identity, rankigScrollView.transform);
+                roomUIclone.name = "Account_" + i.ToString();
+                RankingUserManager rankingUserManagerCS = roomUIclone.GetComponent<RankingUserManager>();
+                rankingUserManagerCS.SetAccountData(resData.allAcountList[i].user_name, resData.allAcountList[i].point);
+            }
+
+            rankings = GameObject.FindGameObjectsWithTag("Ranking");
+            List<GameObject> rankUserList = new List<GameObject>();
+
+            for (int i = 0; i < rankings.Length; i++)
+            {
+                rankUserList.Add(rankings[i]);
+            }
+            var sortedList = rankUserList.OrderByDescending(i => i.GetComponent<RankingUserManager>().UserPoint).ToList();
+
+            int rankNum = 0;
+            int comparisonPoint = -1;
+            for (int i = 0; i < sortedList.Count; i++)
+            {
+                if (int.Parse(sortedList[i].GetComponent<RankingUserManager>().UserPoint) != comparisonPoint)
+                {
+                    rankNum++;
+                }
+                sortedList[i].transform.SetSiblingIndex(i);
+                RankingUserManager rankingUserManagerCS = sortedList[i].GetComponent<RankingUserManager>();
+                rankingUserManagerCS.SetRankingNum(rankNum.ToString());
+                comparisonPoint = int.Parse(sortedList[i].GetComponent<RankingUserManager>().UserPoint);
+            }
+        }
+
+    }
+    #endregion
+    #region ポイント増減
+    protected void UserPointResult(LoginManager loginData)
+    {
+        if (loginData.User_Type == GuestUser)
+        {
+            return;
+        }
+        else
+        {
+
+        }
+    }
+
+    protected virtual IEnumerator AccountPointResultProcess(string loginUser_name,string point)
+    {
+        // POST送信用のフォームを作成
+        WWWForm postData = new WWWForm();
+        postData.AddField("user_name", loginUser_name);
+        postData.AddField("user_point", point);
+        // POSTでデータ送信
+        using UnityWebRequest request = UnityWebRequest.Post(accountLoginURL, postData);
+        request.timeout = 10;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            print(request.error);
+        }
+        #endregion
+    }
 }

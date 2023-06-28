@@ -18,6 +18,7 @@ namespace JsonClass
         public string created;
         public string modified;
         public bool connection_status;
+        public string point;
     }
     [Serializable]
     public class AccountLoginRoot
@@ -157,8 +158,7 @@ namespace JsonClass
         public EntryRoomData roomData;
     }
     #endregion
-
-    #region JSON変換クラス(リバーシ)
+    #region JSON変換クラス(リバーシ_五目並べ)
     // ゲームデータ表示中
     [Serializable]
     public class UpdateGame
@@ -183,7 +183,13 @@ namespace JsonClass
         public int result;
     }
     #endregion
-    #region JSON変換クラス(五目並べ)
-    
+    #region JSON変換クラス(ランキング)
+    // ランキング
+    [Serializable]
+    public class Ranking
+    {
+        public int result;
+        public List<AccountData> allAcountList = new List<AccountData>();
+    }
     #endregion
 }

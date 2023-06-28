@@ -78,8 +78,6 @@ public class ReversiManager : NetworkBaseManager
     bool isTimeCountStart = false;
     bool isPutOrPass = false;
 
-
-
     #endregion
 
     void Start()

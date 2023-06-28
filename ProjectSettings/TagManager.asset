@@ -9,6 +9,7 @@ TagManager:
   - White
   - Black
   - GomokuGrid
+  - Ranking
   layers:
   - Default
   - TransparentFX
