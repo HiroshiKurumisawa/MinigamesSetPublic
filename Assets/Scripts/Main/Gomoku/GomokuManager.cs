@@ -73,6 +73,7 @@ public class GomokuManager : NetworkBaseManager
     float countTime;
     bool isTimeCountStart = false;
     bool isPutOrPass = false;
+    bool isPointResult = false;
     #endregion
 
     void Start()
@@ -133,7 +134,7 @@ public class GomokuManager : NetworkBaseManager
         postData.AddField("room_name", roomDataManagerCS.Room_name);
 
         // POSTでデータ送信
-        using UnityWebRequest request = UnityWebRequest.Post(reversiUpdateGameURL, postData);
+        using UnityWebRequest request = UnityWebRequest.Post(gomokuUpdateGameURL, postData);
         request.timeout = 10;
         yield return request.SendWebRequest();
 
@@ -222,17 +223,57 @@ public class GomokuManager : NetworkBaseManager
         {
             case blackWinNum:
                 ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_host + "(黒)の勝利");
+                if (roomDataManagerCS.User_host == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_host != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case whiteWinNum:
                 ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_entry + "(白)の勝利");
+                if (roomDataManagerCS.User_entry == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_entry != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case blackSurrenderNum:
                 surrender = true;
                 ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_entry + "(白)の勝利");
+                if (roomDataManagerCS.User_entry == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_entry != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case whiteSurrenderNum:
                 surrender = true;
                 ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_host + "(黒)の勝利");
+                if (roomDataManagerCS.User_host == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_host != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case drowNum:
                 ReturnLobby(returnLobbyCountNum, "引き分け");
@@ -461,6 +502,7 @@ public class GomokuManager : NetworkBaseManager
         {
             isGameEnd = true;
             Option.SetActive(false);
+            StartCoroutine(EndGameProcess());
             endForm.SetActive(true);
             endFormText.text = resultString;
             returnLobbycountDownValue = retrunSceneCountNum;
@@ -474,7 +516,8 @@ public class GomokuManager : NetworkBaseManager
         if (returnLobbycountDownValue <= 0 && !sceneMove)
         {
             sceneMove = true;
-            StartCoroutine(EndGameProcess());
+            SoundManager.Instance.StopBGMWithFadeOut(1f);
+            FadeManager.Instance.LoadScene("Lobby", 0.5f);
         }
         else
         {
@@ -496,11 +539,6 @@ public class GomokuManager : NetworkBaseManager
         if (request.result != UnityWebRequest.Result.Success)
         {
             print(request.error);
-        }
-        else
-        {
-            SoundManager.Instance.StopBGMWithFadeOut(1f);
-            FadeManager.Instance.LoadScene("Lobby", 0.5f);
         }
     }
 

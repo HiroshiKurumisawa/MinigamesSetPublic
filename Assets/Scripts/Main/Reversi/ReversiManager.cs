@@ -77,6 +77,7 @@ public class ReversiManager : NetworkBaseManager
     float countTime;
     bool isTimeCountStart = false;
     bool isPutOrPass = false;
+    bool isPointResult = false;
 
     #endregion
 
@@ -115,17 +116,57 @@ public class ReversiManager : NetworkBaseManager
         {
             case blackWinNum:
                 ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_host + "(•)‚ÌŸ—˜");
+                if(roomDataManagerCS.User_host==loginManagerCS.User_name&& !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if(roomDataManagerCS.User_host != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case whiteWinNum:
                 ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_entry + "(”’)‚ÌŸ—˜");
+                if (roomDataManagerCS.User_entry == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_entry != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case blackSurrenderNum:
                 surrender = true;
                 ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_entry + "(”’)‚ÌŸ—˜");
+                if (roomDataManagerCS.User_entry == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_entry != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case whiteSurrenderNum:
                 surrender = true;
                 ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_host + "(•)‚ÌŸ—˜");
+                if (roomDataManagerCS.User_host == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_host != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case drowNum:
                 ReturnLobby(returnLobbyCountNum, "ˆø‚«•ª‚¯");
@@ -166,6 +207,7 @@ public class ReversiManager : NetworkBaseManager
         if (!isGameEnd)
         {
             isGameEnd = true;
+            StartCoroutine(EndGameProcess());
             Option.SetActive(false);
             endForm.SetActive(true);
             endFormText.text = resultString;
@@ -180,7 +222,8 @@ public class ReversiManager : NetworkBaseManager
         if (returnLobbycountDownValue <= 0 && !sceneMove)
         {
             sceneMove = true;
-            StartCoroutine(EndGameProcess());
+            SoundManager.Instance.StopBGMWithFadeOut(1f);
+            FadeManager.Instance.LoadScene("Lobby", 0.5f);
         }
         else
         {
@@ -202,11 +245,6 @@ public class ReversiManager : NetworkBaseManager
         if (request.result != UnityWebRequest.Result.Success)
         {
             print(request.error);
-        }
-        else
-        {
-            SoundManager.Instance.StopBGMWithFadeOut(1f);
-            FadeManager.Instance.LoadScene("Lobby", 0.5f);
         }
     }
 

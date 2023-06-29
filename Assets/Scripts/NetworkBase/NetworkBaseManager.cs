@@ -34,7 +34,8 @@ public class NetworkBaseManager : MonoBehaviour
     protected const string gomokuSurrenderURL = "http://localhost/game/surrender_game";
     //
     protected const string endGameURL = "http://localhost/game/end_game";                           //対戦終了URL
-    protected const string rankingUpdateURL = "http://localhost/ranking/ranking_view";
+    protected const string rankingUpdateURL = "http://localhost/ranking/ranking_view";              // ランキング情報更新
+    protected const string accountPointUpdateURL = "http://localhost/ranking/ranking_point_update";
     #endregion
     #region ServerURL
     //protected const string accountLoginURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/account/login";               // アカウントログインURL
@@ -60,6 +61,7 @@ public class NetworkBaseManager : MonoBehaviour
     //
     //protected const string endGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/end_game";                         // 対戦終了URL
     //protected const string rankingUpdateURL = "http://ik1-423-43506.vs.sakura.ne.jp/ranking/ranking_view";
+    //protected const string accountPointUpdate = "http://ik1-423-43506.vs.sakura.ne.jp/ranking/ranking_point_update";
     #endregion
 
 
@@ -68,6 +70,7 @@ public class NetworkBaseManager : MonoBehaviour
     protected LoginManager loginManagerCS;
     protected RoomDataManager roomDataManagerCS;
     const int AccountUser = 0, GuestUser = 1;
+    protected const int Win = 0, Lose = 1;
     #endregion
     #region ログイン関係
     // ゲストログイン
@@ -145,7 +148,7 @@ public class NetworkBaseManager : MonoBehaviour
                 {
                     loginManagerCS.SetUserData(resData.account_data.manage_id, resData.account_data.login_id, resData.account_data.user_name,
                              resData.account_data.last_login, resData.account_data.created, resData.account_data.modified, resData.account_data.connection_status, 0);
-
+                    loginManagerCS.SetAccountPoint(resData.account_data.point);
                     SoundManager.Instance.StopBGMWithFadeOut(1f);
                     FadeManager.Instance.LoadScene("Lobby", 0.5f);
                 }
@@ -536,7 +539,7 @@ public class NetworkBaseManager : MonoBehaviour
     }
     #endregion
     #region ポイント増減
-    protected void UserPointResult(LoginManager loginData)
+    protected void UserPointResult(LoginManager loginData, int stateNum)
     {
         if (loginData.User_Type == GuestUser)
         {
@@ -544,18 +547,32 @@ public class NetworkBaseManager : MonoBehaviour
         }
         else
         {
-
+            int resultPoint = 0;
+            if (stateNum == Win)
+            {
+                resultPoint = int.Parse(loginData.Point) + 2;
+                StartCoroutine(AccountPointResultProcess(loginData.User_name, resultPoint.ToString()));
+            }
+            else
+            {
+                resultPoint = int.Parse(loginData.Point) - 1;
+                if (resultPoint <= 0)
+                {
+                    resultPoint = 0;
+                }
+                StartCoroutine(AccountPointResultProcess(loginData.User_name, resultPoint.ToString()));
+            }
         }
     }
 
-    protected virtual IEnumerator AccountPointResultProcess(string loginUser_name,string point)
+    protected virtual IEnumerator AccountPointResultProcess(string loginUser_name, string point)
     {
         // POST送信用のフォームを作成
         WWWForm postData = new WWWForm();
         postData.AddField("user_name", loginUser_name);
         postData.AddField("user_point", point);
         // POSTでデータ送信
-        using UnityWebRequest request = UnityWebRequest.Post(accountLoginURL, postData);
+        using UnityWebRequest request = UnityWebRequest.Post(accountPointUpdateURL, postData);
         request.timeout = 10;
         yield return request.SendWebRequest();
 
