@@ -7,9 +7,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using TMPro;
 using SoundSystem;
-using UnityEngine.SceneManagement; // シーン遷移用(フェードマネージャー作成時削除)
+using JsonClass;
 
-public class ReversiManager : MonoBehaviour
+public class ReversiManager : NetworkBaseManager
 {
     #region 変数群
     // ゲーム状況関連
@@ -32,6 +32,8 @@ public class ReversiManager : MonoBehaviour
     TextMeshProUGUI blackStonesUser;
     [SerializeField, Header("白石ユーザー")]
     TextMeshProUGUI whiteStonesUser;
+    [SerializeField, Header("オプション")]
+    GameObject Option;
     const int blackTurnNum = 0;
     const int WhiteTrunNum = 1;
     const int blackWinNum = 2;
@@ -39,7 +41,7 @@ public class ReversiManager : MonoBehaviour
     const int blackSurrenderNum = 4;
     const int whiteSurrenderNum = 5;
     const int drowNum = 6;
-    int thisStatusNum;
+    int thisStatusNum = 0;
     int allstonesNum = 0;
     bool isGameEnd = false;
     bool surrender = false;
@@ -48,12 +50,6 @@ public class ReversiManager : MonoBehaviour
     bool sceneMove = false;
     const float returnLobbyCountNum = 10f;
     float returnLobbycountDownValue;
-    const string updateGameURL = "http://localhost/game/update_game";
-    //const string updateGameURL = "http://54.168.79.41/game/update_game";
-    const string putStoneURL = "http://localhost/game/putStone_game";
-    //const string putStoneURL = "http://54.168.79.41/game/putStone_game";
-    const string surrenderURL = "http://localhost/game/surrender_game";
-    //const string surrenderURL = "http://54.168.79.41/game/surrender_game";
     // 石配置、盤面用
     [SerializeField, Header("ベースステージ")]
     GameObject beaseStage;
@@ -61,7 +57,7 @@ public class ReversiManager : MonoBehaviour
     GameObject tileCreatePoint;
     [SerializeField, Header("タイルのPrefab")]
     GameObject tilePrefab;
-    List<Vector2> tilePoint;
+    List<GameObject> tilePoint;
     [SerializeField, Header("方向リスト")]
     List<Vector2> DirectionList;        // 左上は(-1,1)
     [SerializeField, Header("石のPrefab")]
@@ -81,19 +77,15 @@ public class ReversiManager : MonoBehaviour
     float countTime;
     bool isTimeCountStart = false;
     bool isPutOrPass = false;
+    bool isPointResult = false;
 
-    // 一時的なURL
-    const string endGameURL = "http://localhost/game/end_game";
-    //const string endGameURL= "http://54.168.79.41/game/end_game";
-
-    LoginManager loginManagerCS;
-    RoomDataManager roomDataCS;
     #endregion
 
     void Start()
     {
+        SoundManager.Instance.PlayBGMWithFadeIn("Main", 1f);
         loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
-        roomDataCS = GameObject.FindObjectOfType<RoomDataManager>();
+        roomDataManagerCS = GameObject.FindObjectOfType<RoomDataManager>();
         CreateStage();
         StartStonePut();
     }
@@ -106,23 +98,75 @@ public class ReversiManager : MonoBehaviour
         EndGame();
     }
 
+    private void OnApplicationQuit()
+    {
+        if (roomDataManagerCS.User_host == loginManagerCS.User_name) // 黒が切断したとき
+        {
+            StartCoroutine(SurrenderProcess(blackSurrenderNum));
+        }
+        else if (roomDataManagerCS.User_entry == loginManagerCS.User_name) // 白が切断したとき
+        {
+            StartCoroutine(SurrenderProcess(whiteSurrenderNum));
+        }
+    }
+
     void EndGame()
     {
-        switch(thisStatusNum)
+        switch (thisStatusNum)
         {
             case blackWinNum:
-                ReturnLobby(returnLobbyCountNum, roomDataCS.User_host + "(黒)の勝利");
+                ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_host + "(黒)の勝利");
+                if(roomDataManagerCS.User_host==loginManagerCS.User_name&& !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if(roomDataManagerCS.User_host != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case whiteWinNum:
-                ReturnLobby(returnLobbyCountNum, roomDataCS.User_entry + "(白)の勝利");
+                ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_entry + "(白)の勝利");
+                if (roomDataManagerCS.User_entry == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_entry != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case blackSurrenderNum:
                 surrender = true;
-                ReturnLobby(returnLobbyCountNum, roomDataCS.User_entry + "(白)の勝利");
+                ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_entry + "(白)の勝利");
+                if (roomDataManagerCS.User_entry == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_entry != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case whiteSurrenderNum:
                 surrender = true;
-                ReturnLobby(returnLobbyCountNum, roomDataCS.User_host + "(黒)の勝利");
+                ReturnLobby(returnLobbyCountNum, roomDataManagerCS.User_host + "(黒)の勝利");
+                if (roomDataManagerCS.User_host == loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Win);
+                }
+                else if (roomDataManagerCS.User_host != loginManagerCS.User_name && !isPointResult)
+                {
+                    isPointResult = true;
+                    UserPointResult(loginManagerCS, Lose);
+                }
                 break;
             case drowNum:
                 ReturnLobby(returnLobbyCountNum, "引き分け");
@@ -163,6 +207,8 @@ public class ReversiManager : MonoBehaviour
         if (!isGameEnd)
         {
             isGameEnd = true;
+            StartCoroutine(EndGameProcess());
+            Option.SetActive(false);
             endForm.SetActive(true);
             endFormText.text = resultString;
             returnLobbycountDownValue = retrunSceneCountNum;
@@ -176,7 +222,8 @@ public class ReversiManager : MonoBehaviour
         if (returnLobbycountDownValue <= 0 && !sceneMove)
         {
             sceneMove = true;
-            StartCoroutine(EndGameProcess());
+            SoundManager.Instance.StopBGMWithFadeOut(1f);
+            FadeManager.Instance.LoadScene("Lobby", 0.5f);
         }
         else
         {
@@ -188,7 +235,7 @@ public class ReversiManager : MonoBehaviour
     {
         // POST送信用のフォームを作成
         WWWForm postData = new WWWForm();
-        postData.AddField("room_name", roomDataCS.Room_name);
+        postData.AddField("room_name", roomDataManagerCS.Room_name);
 
         // POSTでデータ送信
         using UnityWebRequest request = UnityWebRequest.Post(endGameURL, postData);
@@ -199,25 +246,47 @@ public class ReversiManager : MonoBehaviour
         {
             print(request.error);
         }
-        else
-        {
-            SceneManager.LoadScene("Lobby"); /*シーン遷移*/
-        }
     }
 
     // ステージ生成
     private void CreateStage()
     {
         var stageSize = beaseStage.GetComponent<Image>().rectTransform.rect;
-        tilePoint = new List<Vector2>();
+        tilePoint = new List<GameObject>();
         for (int i = 0; i < (int)stageSize.height && i < 8; i++)
         {
             for (int j = 0; j < (int)stageSize.width && j < 8; j++)
             {
-                tilePoint.Add(new Vector2(j, i));
                 GameObject tileClone = Instantiate(tilePrefab, tileCreatePoint.transform.position + new Vector3(j, i, 0), Quaternion.identity, beaseStage.transform);
                 tileClone.name = i.ToString() + "-" + j.ToString();
+                if (loginManagerCS.User_name == roomDataManagerCS.User_host)
+                {
+                    if (tileClone.name == "2-3" || tileClone.name == "3-2" || tileClone.name == "5-4" || tileClone.name == "4-5") { tileClone.GetComponent<Image>().color = Color.red; }
+                }
+                tilePoint.Add(tileClone);
             }
+        }
+    }
+
+    private void PutArea()
+    {
+        for (int i = 0; i < tilePoint.Count; i++)
+        {
+            tilePoint[i].GetComponent<Image>().color = Color.green;
+            var rectpos = GameObject.Find(tilePoint[i].name).GetComponent<RectTransform>();
+            var putWorldPos = GetWorldPositionFromRectPosition(rectpos);
+            if (IsPutImpossible(putWorldPos) && (tilePoint[i].transform.childCount == 0))
+            {
+                tilePoint[i].GetComponent<Image>().color = Color.red;
+            }
+        }
+    }
+
+    private void StageColorReset()
+    {
+        for (int i = 0; i < tilePoint.Count; i++)
+        {
+            tilePoint[i].GetComponent<Image>().color = Color.green;
         }
     }
 
@@ -257,6 +326,8 @@ public class ReversiManager : MonoBehaviour
             BlackSpeachBalloonUI.SetActive(false);
             whiteSpeachBalloon.SetActive(true);
             turnText.text = "白のターンです";
+            if (loginManagerCS.User_name == roomDataManagerCS.User_entry) { PutArea(); }
+            else { StageColorReset(); }
         }
         else if (statusNum == WhiteTrunNum)
         {
@@ -264,6 +335,8 @@ public class ReversiManager : MonoBehaviour
             whiteSpeachBalloon.SetActive(false);
             BlackSpeachBalloonUI.SetActive(true);
             turnText.text = "黒のターンです";
+            if (loginManagerCS.User_name == roomDataManagerCS.User_host) { PutArea(); }
+            else { StageColorReset(); }
         }
         else { return; }
     }
@@ -272,7 +345,7 @@ public class ReversiManager : MonoBehaviour
         var pointerObject = (data as PointerEventData).pointerClick;
         var rectpos = GameObject.Find(pointerObject.name).GetComponent<RectTransform>();
         var world = GetWorldPositionFromRectPosition(rectpos);
-        if (!isPutOrPass && ((thisStatusNum == blackTurnNum && roomDataCS.User_host == loginManagerCS.User_name) || (thisStatusNum == WhiteTrunNum && roomDataCS.User_entry == loginManagerCS.User_name)) && ((pointerObject.transform.childCount == 0 && IsPutImpossible(world)) || pointerObject.name == "PassButton"))
+        if (!isPutOrPass && ((thisStatusNum == blackTurnNum && roomDataManagerCS.User_host == loginManagerCS.User_name) || (thisStatusNum == WhiteTrunNum && roomDataManagerCS.User_entry == loginManagerCS.User_name)) && ((pointerObject.transform.childCount == 0 && IsPutImpossible(world)) || pointerObject.name == "PassButton"))
         {
             StartCoroutine(PutStonProcess(pointerObject.name));
         }
@@ -283,12 +356,12 @@ public class ReversiManager : MonoBehaviour
         var statusString = thisStatusNum.ToString();
         // POST送信用のフォームを作成
         WWWForm postData = new WWWForm();
-        postData.AddField("room_name", roomDataCS.Room_name);
+        postData.AddField("room_name", roomDataManagerCS.Room_name);
         postData.AddField("put_point", point);
         postData.AddField("game_status", statusString);
 
         // POSTでデータ送信
-        using UnityWebRequest request = UnityWebRequest.Post(putStoneURL, postData);
+        using UnityWebRequest request = UnityWebRequest.Post(reversiPutStoneURL, postData);
         request.timeout = 10;
         yield return request.SendWebRequest();
 
@@ -311,10 +384,10 @@ public class ReversiManager : MonoBehaviour
     {
         // POST送信用のフォームを作成
         WWWForm postData = new WWWForm();
-        postData.AddField("room_name", roomDataCS.Room_name);
+        postData.AddField("room_name", roomDataManagerCS.Room_name);
 
         // POSTでデータ送信
-        using UnityWebRequest request = UnityWebRequest.Post(updateGameURL, postData);
+        using UnityWebRequest request = UnityWebRequest.Post(reversiUpdateGameURL, postData);
         request.timeout = 10;
         yield return request.SendWebRequest();
 
@@ -325,7 +398,7 @@ public class ReversiManager : MonoBehaviour
         else
         {
             UpdateGame resData = JsonUtility.FromJson<UpdateGame>(request.downloadHandler.text);
-            if (resData.result == 0 && resData.gameData.room_name == roomDataCS.Room_name)
+            if (resData.result == 0 && resData.gameData.room_name == roomDataManagerCS.Room_name)
             {
                 int status = int.Parse(resData.gameData.game_state);
                 if (status == blackTurnNum || status == WhiteTrunNum)
@@ -355,6 +428,7 @@ public class ReversiManager : MonoBehaviour
     {
         if (point != "PassButton")
         {
+            SoundManager.Instance.PlayOneShotSe("reversi_put");
             var putPos = GameObject.Find(point).transform;
             GameObject stoneClone = Instantiate(stonePrefab, putPos.position, Quaternion.identity, putPos);
             if (turnStatusNum == blackTurnNum)
@@ -545,8 +619,8 @@ public class ReversiManager : MonoBehaviour
     // 一番最初に起こる処理
     void StartStonePut()
     {
-        blackStonesUser.text = roomDataCS.User_host;
-        whiteStonesUser.text = roomDataCS.User_entry;
+        blackStonesUser.text = roomDataManagerCS.User_host;
+        whiteStonesUser.text = roomDataManagerCS.User_entry;
         surrenderText.SetActive(false);
         endForm.SetActive(false);
         StonePut("3-4", blackTurnNum);
@@ -571,11 +645,11 @@ public class ReversiManager : MonoBehaviour
         if (!surrender)
         {
             surrenderFormUI.SetActive(false);
-            if (roomDataCS.User_host == loginManagerCS.User_name) // 黒が降参したとき
+            if (roomDataManagerCS.User_host == loginManagerCS.User_name) // 黒が降参したとき
             {
                 StartCoroutine(SurrenderProcess(blackSurrenderNum));
             }
-            else if (roomDataCS.User_entry == loginManagerCS.User_name) // 白が降参したとき
+            else if (roomDataManagerCS.User_entry == loginManagerCS.User_name) // 白が降参したとき
             {
                 StartCoroutine(SurrenderProcess(whiteSurrenderNum));
             }
@@ -586,11 +660,11 @@ public class ReversiManager : MonoBehaviour
         var statusString = status.ToString();
         // POST送信用のフォームを作成
         WWWForm postData = new WWWForm();
-        postData.AddField("room_name", roomDataCS.Room_name);
+        postData.AddField("room_name", roomDataManagerCS.Room_name);
         postData.AddField("game_status", statusString);
 
         // POSTでデータ送信
-        using UnityWebRequest request = UnityWebRequest.Post(surrenderURL, postData);
+        using UnityWebRequest request = UnityWebRequest.Post(reversiSurrenderURL, postData);
         request.timeout = 10;
         yield return request.SendWebRequest();
 
@@ -611,26 +685,3 @@ public class ReversiManager : MonoBehaviour
     }
 }
 
-// ゲームデータ表示中
-[Serializable]
-public class UpdateGame
-{
-    public int result;
-    public GameData gameData;
-}
-[Serializable]
-public class GameData
-{
-    public int id;
-    public string room_name;
-    public string set_point;
-    public string game_state;
-    public string created_at;
-    public string updated_at;
-}
-
-[Serializable]
-public class DeleteRoom
-{
-    public int result;
-}

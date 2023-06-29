@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
+using JsonClass;
 
-public class SelectRoomManager : MonoBehaviour
+public class SelectRoomManager : NetworkBaseManager
 {
-    LoginManager loginManagerCS;
+
     LobbyManager lobbyManagerCS;
 
     [SerializeField] GameObject entryButton;
@@ -15,8 +16,6 @@ public class SelectRoomManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI roomNameText;
     [SerializeField] TextMeshProUGUI roomUserCountText;
 
-    const string entryRoomURL = "http://localhost/room/entry";
-    //const string entryRoomURL = "http://54.168.79.41/room/entry";
 
     string roomName;
     string roomPass;
@@ -103,7 +102,7 @@ public class SelectRoomManager : MonoBehaviour
             if (resData.requestMessage == 0) // 成功したとき
             {
                 lobbyManagerCS.roomsSelectForm.SetActive(false);
-                lobbyManagerCS.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status);
+                lobbyManagerCS.OpenRoomForm(resData.roomData.room_name, resData.roomData.room_password, resData.roomData.user_host, resData.roomData.user_entry, resData.roomData.ready_status_host, resData.roomData.ready_status_entry, resData.roomData.game_status, resData.roomData.game_rule);
             }
             else if (resData.requestMessage == 2)                   // エラー2が返ってきたとき
             {
@@ -116,29 +115,4 @@ public class SelectRoomManager : MonoBehaviour
         }
         isRoomEntry = false;
     }
-}
-
-[Serializable]
-public class EntryRoomData
-{
-    public int id;
-    public string room_name;
-    public string room_password;
-    public string max_room_users;
-    public string in_room_users;
-    public string created_at;
-    public string updated_at;
-    public string user_host;
-    public string user_entry;
-    public bool ready_status_host;
-    public bool ready_status_entry;
-    public bool game_status;
-}
-// ルーム参加
-[Serializable]
-public class EntryRoomRoot
-{
-    public int result;
-    public int requestMessage;
-    public EntryRoomData roomData;
 }

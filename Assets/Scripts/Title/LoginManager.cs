@@ -6,8 +6,6 @@ public class LoginManager : MonoBehaviour
 {
     #region インスタンス関係
     public static LoginManager Instance { get; private set; }
-    bool isVectory;
-    public bool IsVectory { get { return isVectory; } set { isVectory = value; } }
     #endregion
 
     #region 変数群
@@ -26,6 +24,8 @@ public class LoginManager : MonoBehaviour
     public string Modified { get { return modified; } }
     bool connection_status;
     public bool Connection_status { get { return connection_status; } }
+    string point;
+    public string Point { get { return point; } }
     //------------------------
     // 接続しているアカウントの種類(0=アカウントユーザー、 1=ゲストユーザー)
     int user_Type; 
@@ -57,5 +57,10 @@ public class LoginManager : MonoBehaviour
         modified = midfiedTime;
         connection_status = connectionStatus;
         user_Type = userType;
+    }
+
+    public void SetAccountPoint(string _point)
+    {
+        point = _point;
     }
 }

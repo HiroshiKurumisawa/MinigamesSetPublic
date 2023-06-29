@@ -5095,7 +5095,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3dd3d2501164164eb1140e6559fcd87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  massage_LoginText: {fileID: 486162703}
+  massage_LoginText: {fileID: 486162705}
   user_nameField_Login: {fileID: 2099670177}
   passwordField_Login: {fileID: 315777828}
   createFormUI: {fileID: 257849531}

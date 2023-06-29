@@ -5,20 +5,29 @@ using TMPro;
 
 public class MainManager : MonoBehaviour
 {
-    // 必要なデータ保持するためのスクリプト
-    LoginManager loginManagerCS;
+    [SerializeField, Header("表示するゲームのオブジェクト")]
+    GameObject[] minigames;
+
+    const int Revasi = 0, Gomoku = 1;
+
     RoomDataManager roomDataManagerCS;
 
-
-    void Start()
+    private void Start()
     {
-        loginManagerCS = GameObject.FindObjectOfType<LoginManager>();
         roomDataManagerCS = GameObject.FindObjectOfType<RoomDataManager>();
-
+        DisplayMiniGame();
     }
 
-    void Update()
+    void DisplayMiniGame()
     {
-        
+        switch (int.Parse(roomDataManagerCS.Game_rule))
+        {
+            case Revasi:
+                minigames[Revasi].SetActive(true);
+                break;
+            case Gomoku:
+                minigames[Gomoku].SetActive(true);
+                break;
+        }
     }
 }
