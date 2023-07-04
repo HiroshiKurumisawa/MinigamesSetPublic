@@ -8,9 +8,11 @@ using TMPro;
 using UnityEngine.Networking;
 using SoundSystem;
 using JsonClass;
+using DG.Tweening;
 
 public class NetworkBaseManager : MonoBehaviour
 {
+    #region ネットワーク関係
     #region LocalURL
     protected const string accountLoginURL = "http://localhost/user/account/login";                 // アカウントログインURL
     protected const string logOutURL = "http://localhost/user/logout";                              // ログアウトURL
@@ -339,13 +341,6 @@ public class NetworkBaseManager : MonoBehaviour
     // ルームの総数更新
     protected IEnumerator UpdateRoomSelectFormProcess(GameObject roomUIprefab, GameObject roomScrollView)
     {
-        // 更新前のルーム情報を削除
-        GameObject[] rooms = GameObject.FindGameObjectsWithTag("Room");
-        foreach (GameObject room in rooms)
-        {
-            Destroy(room);
-        }
-
         // POST送信用のフォームを作成
         WWWForm postData = new WWWForm();
 
@@ -479,15 +474,8 @@ public class NetworkBaseManager : MonoBehaviour
     #endregion
     #region ランキング
     // ルームの総数更新
-    protected IEnumerator UpdateRankingFormProcess(GameObject acountUIprefab, GameObject rankigScrollView)
+    protected IEnumerator UpdateRankingFormProcess(GameObject acountUIprefab, GameObject rankigScrollView, GameObject[] rankings)
     {
-        // 更新前のルーム情報を削除
-        GameObject[] rankings = GameObject.FindGameObjectsWithTag("Ranking");
-        foreach (GameObject room in rankings)
-        {
-            Destroy(room);
-        }
-
         // POST送信用のフォームを作成
         WWWForm postData = new WWWForm();
 
@@ -580,6 +568,24 @@ public class NetworkBaseManager : MonoBehaviour
         {
             print(request.error);
         }
-        #endregion
     }
+    #endregion
+    #endregion
+    #region UI関係
+    protected void UIopen(GameObject targetObj,IEnumerator col)
+    {
+        targetObj.transform.DOScale(0, 0f).SetLink(gameObject);
+        targetObj.SetActive(true);
+        targetObj.transform.DOScale(1, 0.1f).SetLink(gameObject).OnComplete(()=>StartCoroutine(col));
+    }
+    protected void UIclose(GameObject targetObj)
+    {
+        targetObj.transform.DOScale(0, 0.1f).SetLink(gameObject).OnComplete(() => targetObj.SetActive(false));
+    }
+
+    protected IEnumerator NoActionCol()
+    {
+        yield break;
+    }
+    #endregion
 }

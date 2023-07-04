@@ -168,7 +168,7 @@ public class TitleManager : NetworkBaseManager
         {
             openCreateForm = true;
             createInputSelected = 0;
-            createFormUI.SetActive(true);
+            UIopen(createFormUI, NoActionCol());
         }
     }
     // 新規作成フォーム内の戻るボタンを押したとき
@@ -178,7 +178,7 @@ public class TitleManager : NetworkBaseManager
         {
             openCreateForm = false;
             massageText.GetComponent<TextMeshProUGUI>().text = "";
-            createFormUI.SetActive(false);
+            UIclose(createFormUI);
         }
     }
     // 新規作成フォーム内の作成ボタンを押したとき
@@ -200,7 +200,7 @@ public class TitleManager : NetworkBaseManager
         if (!isOpenQuitGameForm)
         {
             isOpenQuitGameForm = true;
-            quitGameForm.SetActive(true);
+            UIopen(quitGameForm, NoActionCol());
         }
     }
 
@@ -209,7 +209,7 @@ public class TitleManager : NetworkBaseManager
         if (isOpenQuitGameForm)
         {
             isOpenQuitGameForm = false;
-            quitGameForm.SetActive(false);
+            UIclose(quitGameForm);
         }
     }
 

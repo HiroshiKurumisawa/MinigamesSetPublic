@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using SoundSystem;
+using DG.Tweening;
 
 public class RankingManager : NetworkBaseManager
 {
@@ -19,6 +20,8 @@ public class RankingManager : NetworkBaseManager
     bool isOpenRankingForm = false;
     bool isUpdateRankingFormWait = false;
 
+    GameObject[] rankings;
+
     private void FixedUpdate()
     {
         UpdateRankingFormWaitTime(waitTime);
@@ -31,8 +34,8 @@ public class RankingManager : NetworkBaseManager
             isOpenRankingForm = true;
 
             UpdateRankingFormWaitTimeReset();
-            rankingFormObj.SetActive(true);
-            StartCoroutine(UpdateRankingFormProcess(accountUIprefab, rankigScrollView));
+            RankingClear();
+            UIopen(rankingFormObj, UpdateRankingFormProcess(accountUIprefab, rankigScrollView, rankings));
         }
     }
 
@@ -45,7 +48,8 @@ public class RankingManager : NetworkBaseManager
             isUpdateRankingFormWait = false;
             updateRankigFormButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
             waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
-            rankingFormObj.SetActive(false);
+            RankingClear();
+            UIclose(rankingFormObj);
         }
     }
 
@@ -55,7 +59,18 @@ public class RankingManager : NetworkBaseManager
         {
             isUpdateRankingForm = true;
             SoundManager.Instance.PlayOneShotSe("ui_click");
-            StartCoroutine(UpdateRankingFormProcess(accountUIprefab, rankigScrollView));
+            RankingClear();
+            StartCoroutine(UpdateRankingFormProcess(accountUIprefab, rankigScrollView, rankings));
+        }
+    }
+
+    void RankingClear()
+    {
+        // 更新前のルーム情報を削除
+        rankings = GameObject.FindGameObjectsWithTag("Ranking");
+        foreach (GameObject room in rankings)
+        {
+            Destroy(room);
         }
     }
 

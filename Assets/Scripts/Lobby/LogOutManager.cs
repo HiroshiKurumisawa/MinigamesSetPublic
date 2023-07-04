@@ -23,13 +23,13 @@ public class LogOutManager : NetworkBaseManager
 
     public void OpenLogOutForm()
     {
-        logOutForm.SetActive(true);
+        UIopen(logOutForm, NoActionCol());
         openLogOutForm = true;
     }
 
     public void CloseLogOutForm()
     {
-        logOutForm.SetActive(false);
+        UIclose(logOutForm);
         openLogOutForm = false;
     }
 

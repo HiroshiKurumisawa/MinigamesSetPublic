@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SoundSystem;
 
-public class OptionPanelManager : MonoBehaviour
+public class OptionPanelManager : NetworkBaseManager
 {
     #region インスタンス関係
     public static SaveManager Instance { get; private set; }
@@ -53,7 +53,7 @@ public class OptionPanelManager : MonoBehaviour
         if (!isOpenOptionPanel)
         {
             isOpenOptionPanel = true;
-            optionPanel.SetActive(true);
+            UIopen(optionPanel, NoActionCol());
             optionButton.SetActive(false);
             save.LoadData(ref volMaster, ref volBgm, ref volSe);
         }
@@ -66,7 +66,7 @@ public class OptionPanelManager : MonoBehaviour
         {
             isOpenOptionPanel = false;
             save.Save(volumeConfigUI.MasterSilider, volumeConfigUI.BgmSlider, volumeConfigUI.SeSlider);
-            optionPanel.SetActive(false);
+            UIclose(optionPanel);
             optionButton.SetActive(true);
         }
     }
