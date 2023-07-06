@@ -8,60 +8,62 @@ using TMPro;
 using UnityEngine.Networking;
 using SoundSystem;
 using JsonClass;
+using DG.Tweening;
 
 public class NetworkBaseManager : MonoBehaviour
 {
+    #region ネットワーク関係
     #region LocalURL
-    protected const string accountLoginURL = "http://localhost/user/account/login";                 // アカウントログインURL
-    protected const string logOutURL = "http://localhost/user/logout";                              // ログアウトURL
-    protected const string guestLoginURL = "http://localhost/user/guest/login";                     // ゲストログインURL
-    protected const string createAccountURL = "http://localhost/user/account/create";               // アカウント作成URL
-    protected const string entryRoomURL = "http://localhost/room/entry";                            // ルーム参加URL
-    protected const string updateSelectFormURL = "http://localhost/room/select_form_update";        // ルーム選択画面更新URL
-    protected const string roomCreateURL = "http://localhost/room/create";                          // ルーム作成URL
-    protected const string readyURL = "http://localhost/room/ready_user_room";                      // 準備完了変更URL
-    protected const string leaveRoomURL = "http://localhost/room/leave_room";                       // 退出用URL
-    protected const string updateRoomFormURL = "http://localhost/room/room_form_update";            // ルーム情報更新用URL
-    protected const string gameStartURL = "http://localhost/room/gamestart_room";                   // ゲーム開始URL  
-    // リバーシ
-    protected const string reversiUpdateGameURL = "http://localhost/game/update_game";
-    protected const string reversiPutStoneURL = "http://localhost/game/putStone_game";
-    protected const string reversiSurrenderURL = "http://localhost/game/surrender_game";
-    //
-    // 五目並べ
-    protected const string gomokuUpdateGameURL = "http://localhost/game/update_game";
-    protected const string gomokuPutStoneURL = "http://localhost/game/putStone_game";
-    protected const string gomokuSurrenderURL = "http://localhost/game/surrender_game";
-    //
-    protected const string endGameURL = "http://localhost/game/end_game";                           //対戦終了URL
-    protected const string rankingUpdateURL = "http://localhost/ranking/ranking_view";              // ランキング情報更新
-    protected const string accountPointUpdateURL = "http://localhost/ranking/ranking_point_update";
+    //protected const string accountLoginURL = "http://localhost/user/account/login";                 // アカウントログインURL
+    //protected const string logOutURL = "http://localhost/user/logout";                              // ログアウトURL
+    //protected const string guestLoginURL = "http://localhost/user/guest/login";                     // ゲストログインURL
+    //protected const string createAccountURL = "http://localhost/user/account/create";               // アカウント作成URL
+    //protected const string entryRoomURL = "http://localhost/room/entry";                            // ルーム参加URL
+    //protected const string updateSelectFormURL = "http://localhost/room/select_form_update";        // ルーム選択画面更新URL
+    //protected const string roomCreateURL = "http://localhost/room/create";                          // ルーム作成URL
+    //protected const string readyURL = "http://localhost/room/ready_user_room";                      // 準備完了変更URL
+    //protected const string leaveRoomURL = "http://localhost/room/leave_room";                       // 退出用URL
+    //protected const string updateRoomFormURL = "http://localhost/room/room_form_update";            // ルーム情報更新用URL
+    //protected const string gameStartURL = "http://localhost/room/gamestart_room";                   // ゲーム開始URL  
+    //// リバーシ
+    //protected const string reversiUpdateGameURL = "http://localhost/game/update_game";
+    //protected const string reversiPutStoneURL = "http://localhost/game/putStone_game";
+    //protected const string reversiSurrenderURL = "http://localhost/game/surrender_game";
+    ////
+    //// 五目並べ
+    //protected const string gomokuUpdateGameURL = "http://localhost/game/update_game";
+    //protected const string gomokuPutStoneURL = "http://localhost/game/putStone_game";
+    //protected const string gomokuSurrenderURL = "http://localhost/game/surrender_game";
+    ////
+    //protected const string endGameURL = "http://localhost/game/end_game";                           //対戦終了URL
+    //protected const string rankingUpdateURL = "http://localhost/ranking/ranking_view";              // ランキング情報更新
+    //protected const string accountPointUpdateURL = "http://localhost/ranking/ranking_point_update";
     #endregion
     #region ServerURL
-    //protected const string accountLoginURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/account/login";               // アカウントログインURL
-    //protected const string logOutURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/logout";                            // ログアウトURL
-    //protected const string guestLoginURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/guest/login";                   // ゲストログインURL
-    //protected const string createAccountURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/account/create";             // アカウント作成URL
-    //protected const string updateSelectFormURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/select_form_update";      // ルーム選択画面更新URL
-    //protected const string entryRoomURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/entry";                          // ルーム参加URL
-    //protected const string roomCreateURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/create";                        // ルーム作成URL
-    //protected const string readyURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/ready_user_room";                    // 準備完了変更URL
-    //protected const string leaveRoomURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/leave_room";                     // 退出用URL
-    //protected const string updateRoomFormURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/room_form_update";          // ルーム情報更新用URL
-    //protected const string gameStartURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/gamestart_room";                 // ゲーム開始URL
-    // リバーシ
-    //protected const string reversiUpdateGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/update_game";
-    //protected const string reversiPutStoneURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/putStone_game";
-    //protected const string reversiSurrenderURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/surrender_game";
-    //
-    // 五目並べ
-    //protected const string gomokuUpdateGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/update_game";
-    //protected const string gomokuPutStoneURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/putStone_game";
-    //protected const string gomokuSurrenderURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/surrender_game";
-    //
-    //protected const string endGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/end_game";                         // 対戦終了URL
-    //protected const string rankingUpdateURL = "http://ik1-423-43506.vs.sakura.ne.jp/ranking/ranking_view";
-    //protected const string accountPointUpdate = "http://ik1-423-43506.vs.sakura.ne.jp/ranking/ranking_point_update";
+    protected const string accountLoginURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/account/login";               // アカウントログインURL
+    protected const string logOutURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/logout";                            // ログアウトURL
+    protected const string guestLoginURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/guest/login";                   // ゲストログインURL
+    protected const string createAccountURL = "http://ik1-423-43506.vs.sakura.ne.jp/user/account/create";             // アカウント作成URL
+    protected const string updateSelectFormURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/select_form_update";      // ルーム選択画面更新URL
+    protected const string entryRoomURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/entry";                          // ルーム参加URL
+    protected const string roomCreateURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/create";                        // ルーム作成URL
+    protected const string readyURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/ready_user_room";                    // 準備完了変更URL
+    protected const string leaveRoomURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/leave_room";                     // 退出用URL
+    protected const string updateRoomFormURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/room_form_update";          // ルーム情報更新用URL
+    protected const string gameStartURL = "http://ik1-423-43506.vs.sakura.ne.jp/room/gamestart_room";                 // ゲーム開始URL
+    //リバーシ
+    protected const string reversiUpdateGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/update_game";
+    protected const string reversiPutStoneURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/putStone_game";
+    protected const string reversiSurrenderURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/surrender_game";
+
+    //五目並べ
+    protected const string gomokuUpdateGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/update_game";
+    protected const string gomokuPutStoneURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/putStone_game";
+    protected const string gomokuSurrenderURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/surrender_game";
+
+    protected const string endGameURL = "http://ik1-423-43506.vs.sakura.ne.jp/game/end_game";                         // 対戦終了URL
+    protected const string rankingUpdateURL = "http://ik1-423-43506.vs.sakura.ne.jp/ranking/ranking_view";
+    protected const string accountPointUpdateURL = "http://ik1-423-43506.vs.sakura.ne.jp/ranking/ranking_point_update";
     #endregion
 
 
@@ -339,13 +341,6 @@ public class NetworkBaseManager : MonoBehaviour
     // ルームの総数更新
     protected IEnumerator UpdateRoomSelectFormProcess(GameObject roomUIprefab, GameObject roomScrollView)
     {
-        // 更新前のルーム情報を削除
-        GameObject[] rooms = GameObject.FindGameObjectsWithTag("Room");
-        foreach (GameObject room in rooms)
-        {
-            Destroy(room);
-        }
-
         // POST送信用のフォームを作成
         WWWForm postData = new WWWForm();
 
@@ -479,15 +474,8 @@ public class NetworkBaseManager : MonoBehaviour
     #endregion
     #region ランキング
     // ルームの総数更新
-    protected IEnumerator UpdateRankingFormProcess(GameObject acountUIprefab, GameObject rankigScrollView)
+    protected IEnumerator UpdateRankingFormProcess(GameObject acountUIprefab, GameObject rankigScrollView, GameObject[] rankings)
     {
-        // 更新前のルーム情報を削除
-        GameObject[] rankings = GameObject.FindGameObjectsWithTag("Ranking");
-        foreach (GameObject room in rankings)
-        {
-            Destroy(room);
-        }
-
         // POST送信用のフォームを作成
         WWWForm postData = new WWWForm();
 
@@ -580,6 +568,24 @@ public class NetworkBaseManager : MonoBehaviour
         {
             print(request.error);
         }
-        #endregion
     }
+    #endregion
+    #endregion
+    #region UI関係
+    protected void UIopen(GameObject targetObj,IEnumerator col)
+    {
+        targetObj.transform.DOScale(0, 0f).SetLink(gameObject);
+        targetObj.SetActive(true);
+        targetObj.transform.DOScale(1, 0.1f).SetLink(gameObject).OnComplete(()=>StartCoroutine(col));
+    }
+    protected void UIclose(GameObject targetObj)
+    {
+        targetObj.transform.DOScale(0, 0.1f).SetLink(gameObject).OnComplete(() => targetObj.SetActive(false));
+    }
+
+    protected IEnumerator NoActionCol()
+    {
+        yield break;
+    }
+    #endregion
 }

@@ -209,7 +209,7 @@ public class ReversiManager : NetworkBaseManager
             isGameEnd = true;
             StartCoroutine(EndGameProcess());
             Option.SetActive(false);
-            endForm.SetActive(true);
+            UIopen(endForm,NoActionCol());
             endFormText.text = resultString;
             returnLobbycountDownValue = retrunSceneCountNum;
             returnLobbyCount.text = returnLobbycountDownValue.ToString("00");
@@ -323,8 +323,8 @@ public class ReversiManager : NetworkBaseManager
         if (statusNum == blackTurnNum)
         {
             thisStatusNum = WhiteTrunNum;
-            BlackSpeachBalloonUI.SetActive(false);
-            whiteSpeachBalloon.SetActive(true);
+            UIclose(BlackSpeachBalloonUI);
+            UIopen(whiteSpeachBalloon, NoActionCol());
             turnText.text = "白のターンです";
             if (loginManagerCS.User_name == roomDataManagerCS.User_entry) { PutArea(); }
             else { StageColorReset(); }
@@ -332,8 +332,8 @@ public class ReversiManager : NetworkBaseManager
         else if (statusNum == WhiteTrunNum)
         {
             thisStatusNum = blackTurnNum;
-            whiteSpeachBalloon.SetActive(false);
-            BlackSpeachBalloonUI.SetActive(true);
+            UIclose(whiteSpeachBalloon);
+            UIopen(BlackSpeachBalloonUI, NoActionCol());
             turnText.text = "黒のターンです";
             if (loginManagerCS.User_name == roomDataManagerCS.User_host) { PutArea(); }
             else { StageColorReset(); }
@@ -636,7 +636,7 @@ public class ReversiManager : NetworkBaseManager
         if (!surrenderForm && !isGameEnd)
         {
             surrenderForm = true;
-            surrenderFormUI.SetActive(true);
+            UIopen(surrenderFormUI, NoActionCol());
         }
     }
 
@@ -680,7 +680,7 @@ public class ReversiManager : NetworkBaseManager
         if (surrenderForm)
         {
             surrenderForm = false;
-            surrenderFormUI.SetActive(false);
+            UIclose(surrenderFormUI);
         }
     }
 }

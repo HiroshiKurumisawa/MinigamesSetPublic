@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using SoundSystem;
+using DG.Tweening;
 
 public class RoomCreateArrow : MonoBehaviour
 {
@@ -17,13 +18,13 @@ public class RoomCreateArrow : MonoBehaviour
     // ポインター処理
     public void PointerEnter()
     {
-        thisSelectUI.GetComponent<Image>().color = Color.yellow;
+        thisSelectUI.GetComponent<Image>().DOColor(Color.yellow, 0.2f).SetLink(gameObject);
         SoundManager.Instance.PlayOneShotSe("ui_enter");
     }
 
     public void PointerExit()
     {
-        thisSelectUI.GetComponent<Image>().color = Color.white;
+        thisSelectUI.GetComponent<Image>().DOColor(Color.white, 0.2f).SetLink(gameObject);
     }
 
     public void DecisionButton()

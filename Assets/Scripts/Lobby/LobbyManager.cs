@@ -145,7 +145,7 @@ public class LobbyManager : NetworkBaseManager
         {
             isOpenCreateRoomForm = true;
             gameRuleNum = 0;
-            createRoomForm.SetActive(true);
+            UIopen(createRoomForm, NoActionCol());
             RuleView(gameRuleNum);
         }
     }
@@ -156,7 +156,7 @@ public class LobbyManager : NetworkBaseManager
         {
             isOpenCreateRoomForm = false;
             massage_CreateRoomText.GetComponent<TextMeshProUGUI>().text = "";
-            createRoomForm.SetActive(false);
+            UIclose(createRoomForm);
         }
     }
     public void CreateRoom()
@@ -217,8 +217,8 @@ public class LobbyManager : NetworkBaseManager
         {
             isOpenSelectRoomForm = true;
             UpdateRoomSelectFormWaitTimeReset();
-            roomsSelectForm.SetActive(true);
-            StartCoroutine(UpdateRoomSelectFormProcess(roomUIprefab, roomScrollView));
+            RoomClear();
+            UIopen(roomsSelectForm, UpdateRoomSelectFormProcess(roomUIprefab, roomScrollView));
         }
     }
     // ルーム選択フォーム非表示
@@ -231,7 +231,8 @@ public class LobbyManager : NetworkBaseManager
             isUpdateSelectFormWait = false;
             updateRoomButton.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
             waitTimeMessage.GetComponent<TextMeshProUGUI>().text = "";
-            roomsSelectForm.SetActive(false);
+            RoomClear();
+            UIclose(roomsSelectForm);
         }
     }
     // ルームパスワード入力画面
@@ -241,7 +242,7 @@ public class LobbyManager : NetworkBaseManager
         {
             isOpenInputRoomPasswordForm = true;
             inputRoomPasswordFormRoomName = roomName;
-            inputRoomPasswordForm.SetActive(true);
+            UIopen(inputRoomPasswordForm, NoActionCol());
             inputRoomPasswordRoomNameText.GetComponent<TextMeshProUGUI>().text = inputRoomPasswordFormRoomName;
         }
     }
@@ -252,7 +253,7 @@ public class LobbyManager : NetworkBaseManager
             isOpenInputRoomPasswordForm = false;
             passwordField_EntryRoom.text = "";
             inputRoomPasswordMessageText.GetComponent<TextMeshProUGUI>().text = "";
-            inputRoomPasswordForm.SetActive(false);
+            UIclose(inputRoomPasswordForm);
             UpdateRoomSelectFormWaitTimeReset();
         }
     }
@@ -278,7 +279,18 @@ public class LobbyManager : NetworkBaseManager
         {
             updateSelectForm = true;
             SoundManager.Instance.PlayOneShotSe("ui_click");
+            RoomClear();
             StartCoroutine(UpdateRoomSelectFormProcess(roomUIprefab, roomScrollView));
+        }
+    }
+
+    void RoomClear()
+    {
+        // 更新前のルーム情報を削除
+        GameObject[] rooms = GameObject.FindGameObjectsWithTag("Room");
+        foreach (GameObject room in rooms)
+        {
+            Destroy(room);
         }
     }
 

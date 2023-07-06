@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using SoundSystem;
+using DG.Tweening;
 
 public class Pointer : MonoBehaviour
 {
@@ -17,13 +18,13 @@ public class Pointer : MonoBehaviour
     // ポインター処理
     public void PointerEnter()
     {
-        thisSelectUI.GetComponent<Image>().color = new Color(1f, 0.5f, 0f, 1f);
+        thisSelectUI.GetComponent<Image>().DOColor(new Color(1f, 0.5f, 0f, 1f), 0.2f).SetLink(gameObject);
         SoundManager.Instance.PlayOneShotSe("ui_enter");
     }
 
     public void PointerExit()
     {
-        thisSelectUI.GetComponent<Image>().color = new Color(0f, 0.5f, 1f, 1f);
+        thisSelectUI.GetComponent<Image>().DOColor(new Color(0f, 0.5f, 1f, 1f), 0.2f).SetLink(gameObject);
     }
 
     public void DecisionButton()

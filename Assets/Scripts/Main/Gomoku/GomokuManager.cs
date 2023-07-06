@@ -203,15 +203,15 @@ public class GomokuManager : NetworkBaseManager
         if (statusNum == blackTurnNum)
         {
             thisStatusNum = WhiteTrunNum;
-            BlackSpeachBalloonUI.SetActive(false);
-            whiteSpeachBalloon.SetActive(true);
+            UIclose(BlackSpeachBalloonUI);
+            UIopen(whiteSpeachBalloon, NoActionCol());
             turnText.text = "白のターンです";
         }
         else if (statusNum == WhiteTrunNum)
         {
             thisStatusNum = blackTurnNum;
-            whiteSpeachBalloon.SetActive(false);
-            BlackSpeachBalloonUI.SetActive(true);
+            UIclose(whiteSpeachBalloon);
+            UIopen(BlackSpeachBalloonUI, NoActionCol());
             turnText.text = "黒のターンです";
         }
         else { return; }
@@ -447,7 +447,7 @@ public class GomokuManager : NetworkBaseManager
         if (!surrenderForm && !isGameEnd)
         {
             surrenderForm = true;
-            surrenderFormUI.SetActive(true);
+            UIopen(surrenderFormUI, NoActionCol());
         }
     }
 
@@ -491,7 +491,7 @@ public class GomokuManager : NetworkBaseManager
         if (surrenderForm)
         {
             surrenderForm = false;
-            surrenderFormUI.SetActive(false);
+            UIclose(surrenderFormUI);
         }
     }
 
@@ -503,7 +503,7 @@ public class GomokuManager : NetworkBaseManager
             isGameEnd = true;
             Option.SetActive(false);
             StartCoroutine(EndGameProcess());
-            endForm.SetActive(true);
+            UIopen(endForm, NoActionCol());
             endFormText.text = resultString;
             returnLobbycountDownValue = retrunSceneCountNum;
             returnLobbyCount.text = returnLobbycountDownValue.ToString("00");

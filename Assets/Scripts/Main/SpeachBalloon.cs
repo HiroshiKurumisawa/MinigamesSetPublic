@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using DG.Tweening;
 
 public class SpeachBalloon : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class SpeachBalloon : MonoBehaviour
             isPointAnim = true;
             for (int i = 0; i < pointNum; i++)
             {
-                points[i].SetActive(false);
+                points[i].transform.DOScale(0, 0.1f).SetLink(gameObject);
             }
             StartCoroutine(SpeachBalloonDisplayAnim());
         }
@@ -35,7 +36,7 @@ public class SpeachBalloon : MonoBehaviour
         for (int i = 0; i < pointNum; i++)
         {
             yield return new WaitForSeconds(0.5f);
-            points[i].SetActive(true);
+            points[i].transform.DOScale(1, 0.1f).SetLink(gameObject);
         }
         yield return new WaitForSeconds(0.5f);
         isPointAnim = false;
